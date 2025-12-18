@@ -1,0 +1,7 @@
+{
+  "name": "Sudeep SR - Vibe Coder Portfolio",
+  "description": "An immersive, 3D interactive portfolio for Sudeep SR, featuring a swinging lightbulb theme toggle, a Spider-Man mini-game, and an AI chat assistant.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
