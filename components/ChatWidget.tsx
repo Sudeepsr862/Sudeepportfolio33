@@ -28,7 +28,8 @@ export const ChatWidget: React.FC<Props> = ({ isLightOn }) => {
   // Initialize Gemini Chat session
   useEffect(() => {
     if (isOpen && !chatInstance.current) {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+      // Fix: Strictly following initialization guidelines by using process.env.API_KEY directly
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       chatInstance.current = ai.chats.create({
         model: 'gemini-3-flash-preview',
         config: {
@@ -64,7 +65,8 @@ export const ChatWidget: React.FC<Props> = ({ isLightOn }) => {
 
     try {
       if (!chatInstance.current) {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+        // Fix: Strictly following initialization guidelines by using process.env.API_KEY directly
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         chatInstance.current = ai.chats.create({ model: 'gemini-3-flash-preview' });
       }
 
@@ -75,6 +77,7 @@ export const ChatWidget: React.FC<Props> = ({ isLightOn }) => {
 
       let fullText = '';
       for await (const chunk of stream) {
+        // Fix: Extracting text directly from chunk properties as per GenerateContentResponse guidelines
         const chunkText = (chunk as GenerateContentResponse).text;
         if (chunkText) {
           fullText += chunkText;
