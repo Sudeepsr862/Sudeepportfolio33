@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { User, MapPin, GraduationCap, Palette } from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
 import { SpiderManCharacter } from './Scene/SpiderManCharacter';
-import { OrbitControls, PerspectiveCamera, Environment, Float } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, Environment, Float, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 
 const AmbientLight = 'ambientLight' as any;
@@ -23,7 +23,7 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
         viewport={{ once: true }}
         className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center"
       >
-        <div>
+        <div className="order-2 md:order-1">
           <h2 className={`text-4xl md:text-5xl font-bold mb-8 ${isLightOn ? 'text-zinc-900' : 'text-white'}`}>
             The Story <span className="text-red-500 italic">Behind the Code</span>
           </h2>
@@ -55,41 +55,52 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
           </div>
         </div>
 
-        <div className="relative h-[700px] w-full group">
-          <div className={`h-full w-full rounded-[3.5rem] overflow-hidden border-2 border-red-600/20 shadow-2xl transition-colors duration-700 ${isLightOn ? 'bg-zinc-100' : 'bg-zinc-950'}`}>
-            <Suspense fallback={<div className="flex items-center justify-center h-full font-mono text-red-500 animate-pulse uppercase tracking-[0.2em]">Suiting Up...</div>}>
+        <div className="relative h-[750px] w-full group order-1 md:order-2">
+          <div className={`h-full w-full rounded-[4rem] overflow-hidden border-2 border-red-600/20 shadow-2xl transition-colors duration-700 ${isLightOn ? 'bg-zinc-100' : 'bg-[#0a0a0a]'}`}>
+            <Suspense fallback={<div className="flex items-center justify-center h-full font-mono text-red-500 animate-pulse uppercase tracking-[0.2em]">Materializing Hero...</div>}>
               <Canvas shadows dpr={[1, 2]} gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}>
-                <PerspectiveCamera makeDefault position={[0, 1.2, 8]} fov={28} />
+                <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={28} />
                 <AmbientLight intensity={0.5} />
                 
-                {/* High-quality Cinematic Studio Lighting */}
-                <SpotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={3} color="#ffffff" castShadow />
+                {/* Cinematic Key and Rim Lighting for the Suit */}
+                <SpotLight position={[10, 10, 10]} angle={0.2} penumbra={1} intensity={3} color="#ffffff" castShadow />
                 <PointLight position={[-10, 5, 5]} color="#4488ff" intensity={2} />
                 <PointLight position={[10, -5, 5]} color="#ff4444" intensity={1.5} />
                 
                 <Environment preset="city" />
                 
-                <Float speed={1.2} rotationIntensity={0.2} floatIntensity={0.3}>
-                  <SpiderManCharacter />
+                <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
+                  <group position={[0, -0.2, 0]}> {/* Spidey is perfectly centered */}
+                    <SpiderManCharacter />
+                  </group>
                 </Float>
+
+                <ContactShadows 
+                  position={[0, -2.5, 0]} 
+                  opacity={0.6} 
+                  scale={12} 
+                  blur={3} 
+                  far={4} 
+                  color={isLightOn ? "#000000" : "#ff0000"} 
+                />
                 
                 <OrbitControls 
                   enableZoom={false} 
                   minPolarAngle={Math.PI / 3} 
-                  maxPolarAngle={Math.PI / 1.8}
+                  maxPolarAngle={Math.PI / 1.6}
                   enableDamping={true}
-                  dampingFactor={0.05}
+                  dampingFactor={0.06}
                 />
               </Canvas>
             </Suspense>
           </div>
           
           <motion.div 
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-6 -right-6 px-10 py-5 bg-red-600 text-white text-[11px] font-black rounded-3xl shadow-[0_25px_60px_rgba(220,38,38,0.4)] pointer-events-none group-hover:scale-110 transition-transform uppercase tracking-[0.25em] italic"
+            animate={{ y: [0, -10, 0], scale: [1, 1.05, 1] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-6 -right-6 px-10 py-5 bg-red-600 text-white text-[10px] font-black rounded-3xl shadow-[0_20px_50px_rgba(220,38,38,0.4)] pointer-events-none group-hover:scale-110 transition-transform uppercase tracking-[0.2em] italic border-2 border-white/20"
           >
-            SYPE-TECH SUIT 🕸️
+            POINT AT ME 👋 🕸️
           </motion.div>
         </div>
       </motion.div>
