@@ -5,6 +5,8 @@ import { User, MapPin, GraduationCap, Palette } from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
 import { SpiderManCharacter } from './Scene/SpiderManCharacter';
 import { OrbitControls, PerspectiveCamera, Environment, Float } from '@react-three/drei';
+// Import THREE to resolve reference error in Canvas gl property
+import * as THREE from 'three';
 
 const AmbientLight = 'ambientLight' as any;
 const SpotLight = 'spotLight' as any;
@@ -56,20 +58,20 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
         </div>
 
         <div className="relative h-[650px] w-full group">
-          {/* USER REQUEST: Container background light + red spider web pattern */}
-          <div className="h-full w-full rounded-[3rem] overflow-hidden border-2 border-red-600/20 light-web-pattern transition-all duration-1000 shadow-2xl">
-            <Suspense fallback={<div className="flex items-center justify-center h-full font-mono text-red-500 animate-pulse uppercase tracking-[0.2em]">Synchronizing Hero...</div>}>
-              <Canvas shadows dpr={[1, 2]}>
-                <PerspectiveCamera makeDefault position={[0, 0, 6]} fov={35} />
-                <AmbientLight intensity={1.5} />
+          {/* USER REQUEST: High-fidelity realistic Spider-Man Model Container */}
+          <div className="h-full w-full rounded-[3rem] overflow-hidden border-2 border-red-600/20 light-web-pattern transition-all duration-1000 shadow-2xl bg-zinc-950">
+            <Suspense fallback={<div className="flex items-center justify-center h-full font-mono text-red-500 animate-pulse uppercase tracking-[0.2em]">Synchronizing Marvel Model...</div>}>
+              <Canvas shadows dpr={[1, 2]} gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}>
+                <PerspectiveCamera makeDefault position={[0, 0, 7]} fov={35} />
+                <AmbientLight intensity={0.5} />
                 
-                {/* High contrast cinematic lighting for light background */}
-                <SpotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={15} color="#ffffff" castShadow />
-                <PointLight position={[-10, 5, -5]} color="#44aaff" intensity={12} />
-                <PointLight position={[10, -5, 5]} color="#ff2222" intensity={15} />
-                <PointLight position={[0, 10, -10]} color="#ffffff" intensity={5} />
+                {/* Cinema Grade Cinematic Lighting for high detail */}
+                <SpotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} color="#ffffff" castShadow />
+                <PointLight position={[-10, 5, -5]} color="#00f3ff" intensity={1} />
+                <PointLight position={[10, -5, 5]} color="#ff2222" intensity={2} />
+                <Environment preset="city" />
                 
-                <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
+                <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
                   <SpiderManCharacter />
                 </Float>
                 
@@ -90,7 +92,7 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
             transition={{ duration: 2, repeat: Infinity }}
             className="absolute -top-4 -right-4 px-8 py-4 bg-red-600 text-white text-[10px] font-black rounded-2xl shadow-[0_15px_40px_rgba(220,38,38,0.2)] pointer-events-none group-hover:scale-110 transition-transform uppercase tracking-widest"
           >
-            Web-Head Proto-Model v4.0 🕸️
+            PETER PARKER VIBE v4.5 🕸️
           </motion.div>
         </div>
       </motion.div>

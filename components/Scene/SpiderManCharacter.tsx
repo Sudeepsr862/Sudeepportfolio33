@@ -1,190 +1,243 @@
-import React, { useRef, useState } from 'react';
+
+import React, { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 export const SpiderManCharacter: React.FC = () => {
   const groupRef = useRef<THREE.Group>(null);
   const headRef = useRef<THREE.Group>(null);
-  const armRef = useRef<THREE.Group>(null);
-  const leftArmRef = useRef<THREE.Group>(null);
+  const leftEyeRef = useRef<THREE.Group>(null);
+  const rightEyeRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
+
+  // Materials for the "Integrated Suit" (Tom Holland Style)
+  const metallicRed = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: "#b00000",
+    metalness: 0.6,
+    roughness: 0.3,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.1,
+    sheen: 1,
+    sheenColor: "#ff0000",
+  }), []);
+
+  const carbonFiberBlack = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: "#050505",
+    metalness: 0.8,
+    roughness: 0.4,
+    clearcoat: 0.5,
+  }), []);
+
+  const highGlossGold = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: "#d4af37",
+    metalness: 1.0,
+    roughness: 0.1,
+    emissive: "#aa8800",
+    emissiveIntensity: 0.2,
+  }), []);
+
+  const lensWhite = useMemo(() => new THREE.MeshStandardMaterial({
+    color: "#ffffff",
+    emissive: "#ffffff",
+    emissiveIntensity: 1.5,
+  }), []);
 
   useFrame((state) => {
     if (!groupRef.current) return;
     const t = state.clock.getElapsedTime();
 
-    groupRef.current.position.y = Math.sin(t * 1.5) * 0.02 - 0.2;
-    const targetRY = state.mouse.x * 0.5;
-    const targetRX = -state.mouse.y * 0.2;
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRY * 0.1, 0.05);
-    
+    // Natural breathing and floating animation
+    groupRef.current.position.y = Math.sin(t * 1.5) * 0.05 - 0.5;
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, state.mouse.x * 0.2, 0.05);
+
+    // Head tracking
     if (headRef.current) {
-      headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, targetRY, 0.1);
-      headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, targetRX, 0.1);
-      headRef.current.rotation.z = Math.sin(t * 0.8) * 0.01;
+      headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, state.mouse.x * 0.8, 0.1);
+      headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, -state.mouse.y * 0.5, 0.1);
     }
 
-    if (armRef.current) {
-      if (hovered) {
-        armRef.current.rotation.z = -2.8 + Math.sin(t * 12) * 0.15;
-        armRef.current.rotation.x = 0.9 + Math.cos(t * 6) * 0.08;
-      } else {
-        armRef.current.rotation.z = -0.45 + Math.sin(t * 1.2) * 0.02;
-        armRef.current.rotation.x = 0.25;
-      }
-    }
-
-    if (leftArmRef.current) {
-      leftArmRef.current.rotation.z = 0.45 - Math.sin(t * 1.2) * 0.02;
-      leftArmRef.current.rotation.x = 0.25;
+    // Mechanical Eye/Lens "Shutter" effect
+    const eyeScaleY = hovered ? 0.6 : (0.9 + Math.sin(t * 3) * 0.05); // Blink/Squint
+    if (leftEyeRef.current && rightEyeRef.current) {
+      leftEyeRef.current.scale.y = THREE.MathUtils.lerp(leftEyeRef.current.scale.y, eyeScaleY, 0.1);
+      rightEyeRef.current.scale.y = THREE.MathUtils.lerp(rightEyeRef.current.scale.y, eyeScaleY, 0.1);
     }
   });
 
-  const redSuit = {
-    color: "#8b0000",
-    roughness: 0.55,
-    metalness: 0.2,
-    clearcoat: 0.3,
-    clearcoatRoughness: 0.2,
-    sheen: 0.7,
-    sheenColor: "#ff4444",
-  };
-
-  const blueSuit = {
-    color: "#000b33",
-    roughness: 0.35,
-    metalness: 0.4,
-    clearcoat: 0.5,
-  };
-
-  const whiteLogo = {
-    color: "#ffffff",
-    emissive: "#ffffff",
-    emissiveIntensity: hovered ? 1.0 : 0.15,
-    roughness: 0.1,
-    metalness: 0.6,
-  };
-
   return (
-    <group ref={groupRef} scale={[0.55, 0.55, 0.55]} onPointerOver={() => setHovered(true)} onPointerOut={() => setHovered(false)}>
-      <group ref={headRef} position={[0, 2.3, 0]}>
+    <group ref={groupRef} scale={[0.75, 0.75, 0.75]}>
+      {/* HEAD */}
+      <group ref={headRef} position={[0, 2.5, 0]}>
         <mesh castShadow>
-          <sphereGeometry args={[0.26, 64, 64]} scale={[1, 1.18, 1.08]} />
-          <meshPhysicalMaterial {...redSuit} />
-        </mesh>
-        <mesh position={[0, -0.09, 0.03]}>
-          <sphereGeometry args={[0.23, 32, 32]} scale={[0.95, 1, 0.9]} />
-          <meshPhysicalMaterial {...redSuit} />
+          <sphereGeometry args={[0.28, 64, 64]} scale={[1, 1.15, 1.05]} />
+          <primitive object={metallicRed} attach="material" />
         </mesh>
         
-        <group position={[0, 0.02, 0.08]}>
-          <mesh position={[-0.13, 0.07, 0.19]} rotation={[0.12, 0.45, 0.1]}>
-            <boxGeometry args={[0.16, 0.23, 0.04]} />
-            <meshStandardMaterial color="#020202" roughness={0.1} />
-          </mesh>
-          <mesh position={[0.13, 0.07, 0.19]} rotation={[0.12, -0.45, -0.1]}>
-            <boxGeometry args={[0.16, 0.23, 0.04]} />
-            <meshStandardMaterial color="#020202" roughness={0.1} />
-          </mesh>
-          
-          <mesh position={[-0.13, 0.07, 0.21]} rotation={[0.12, 0.45, 0.1]} scale={hovered ? [1.15, 0.8, 1] : [1, 1, 1]}>
-            <boxGeometry args={[0.13, 0.18, 0.02]} />
-            <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={1.2} />
-          </mesh>
-          <mesh position={[0.13, 0.07, 0.21]} rotation={[0.12, -0.45, -0.1]} scale={hovered ? [1.15, 0.8, 1] : [1, 1, 1]}>
-            <boxGeometry args={[0.13, 0.18, 0.02]} />
-            <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={1.2} />
-          </mesh>
+        {/* Mechanical Lenses */}
+        <group position={[0, 0.05, 0.22]}>
+          {/* Left Lens */}
+          <group ref={leftEyeRef} position={[-0.14, 0.02, 0]} rotation={[0.1, 0.4, 0.1]}>
+            <mesh>
+              <boxGeometry args={[0.18, 0.22, 0.05]} />
+              <meshStandardMaterial color="#000000" roughness={0} />
+            </mesh>
+            <mesh position={[0, 0, 0.02]}>
+              <boxGeometry args={[0.14, 0.18, 0.02]} />
+              <primitive object={lensWhite} attach="material" />
+            </mesh>
+          </group>
+          {/* Right Lens */}
+          <group ref={rightEyeRef} position={[0.14, 0.02, 0]} rotation={[0.1, -0.4, -0.1]}>
+            <mesh>
+              <boxGeometry args={[0.18, 0.22, 0.05]} />
+              <meshStandardMaterial color="#000000" roughness={0} />
+            </mesh>
+            <mesh position={[0, 0, 0.02]}>
+              <boxGeometry args={[0.14, 0.18, 0.02]} />
+              <primitive object={lensWhite} attach="material" />
+            </mesh>
+          </group>
         </group>
-
-        <mesh position={[0, -0.32, 0]}>
-          <cylinderGeometry args={[0.13, 0.18, 0.38, 32]} />
-          <meshPhysicalMaterial {...redSuit} />
+        
+        {/* Neck */}
+        <mesh position={[0, -0.3, 0]}>
+          <cylinderGeometry args={[0.14, 0.18, 0.4, 32]} />
+          <primitive object={metallicRed} attach="material" />
         </mesh>
       </group>
 
-      <group position={[0, 1.35, 0]}>
-        <mesh position={[0.18, 0.22, 0.08]} castShadow>
-          <sphereGeometry args={[0.19, 32, 32]} scale={[1, 0.85, 0.6]} />
-          <meshPhysicalMaterial {...redSuit} />
-        </mesh>
-        <mesh position={[-0.18, 0.22, 0.08]} castShadow>
-          <sphereGeometry args={[0.19, 32, 32]} scale={[1, 0.85, 0.6]} />
-          <meshPhysicalMaterial {...redSuit} />
+      {/* TORSO */}
+      <group position={[0, 1.5, 0]}>
+        {/* Upper Chest */}
+        <mesh castShadow>
+          <sphereGeometry args={[0.5, 64, 64]} scale={[1, 1.1, 0.7]} />
+          <primitive object={metallicRed} attach="material" />
         </mesh>
         
-        <mesh position={[0, 0.1, 0]} castShadow>
-          <sphereGeometry args={[0.45, 64, 64]} scale={[1, 1, 0.75]} />
-          <meshPhysicalMaterial {...redSuit} />
-        </mesh>
-        
-        <mesh position={[0, -0.25, 0]} castShadow>
-          <cylinderGeometry args={[0.36, 0.3, 0.7, 32]} />
-          <meshPhysicalMaterial {...redSuit} />
+        {/* Waist/Abdomen */}
+        <mesh position={[0, -0.4, 0]} castShadow>
+          <cylinderGeometry args={[0.38, 0.3, 0.8, 32]} />
+          <primitive object={carbonFiberBlack} attach="material" />
         </mesh>
 
-        <group position={[0, 0.18, 0.36]}>
-          <mesh scale={[1.1, 1.3, 1]}>
-            <boxGeometry args={[0.08, 0.18, 0.03]} />
-            <meshPhysicalMaterial {...whiteLogo} />
+        {/* Integrated Suit Gold Spider Logo (Chest & Back) */}
+        <group position={[0, 0.1, 0.35]}>
+          {/* Core Body */}
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.08, 0.08, 0.05, 6]} />
+            <primitive object={highGlossGold} attach="material" />
           </mesh>
-          {[-1, 1].map(side => (
-            <group key={`logo-side-${side}`}>
-              <mesh position={[side * 0.2, 0.25, -0.05]} rotation={[0, 0, side * 0.9]}>
-                <boxGeometry args={[0.32, 0.05, 0.02]} />
-                <meshPhysicalMaterial {...whiteLogo} />
-              </mesh>
-              <mesh position={[side * 0.2, -0.15, -0.05]} rotation={[0, 0, side * -0.75]}>
-                <boxGeometry args={[0.25, 0.05, 0.02]} />
-                <meshPhysicalMaterial {...whiteLogo} />
-              </mesh>
-            </group>
-          ))}
+          {/* Top Legs */}
+          <mesh position={[0.2, 0.25, 0]} rotation={[0, 0, 1]}>
+            <boxGeometry args={[0.4, 0.04, 0.03]} />
+            <primitive object={highGlossGold} attach="material" />
+          </mesh>
+          <mesh position={[-0.2, 0.25, 0]} rotation={[0, 0, -1]}>
+            <boxGeometry args={[0.4, 0.04, 0.03]} />
+            <primitive object={highGlossGold} attach="material" />
+          </mesh>
+          {/* Bottom Legs */}
+          <mesh position={[0.15, -0.25, 0]} rotation={[0, 0, -0.8]}>
+            <boxGeometry args={[0.4, 0.04, 0.03]} />
+            <primitive object={highGlossGold} attach="material" />
+          </mesh>
+          <mesh position={[-0.15, -0.25, 0]} rotation={[0, 0, 0.8]}>
+            <boxGeometry args={[0.4, 0.04, 0.03]} />
+            <primitive object={highGlossGold} attach="material" />
+          </mesh>
         </group>
 
-        <mesh position={[0.34, -0.05, 0]} rotation={[0, 0, 0.08]}>
-          <boxGeometry args={[0.22, 0.95, 0.42]} />
-          <meshPhysicalMaterial {...blueSuit} />
+        {/* Side Panels (Integrated Suit aesthetic) */}
+        <mesh position={[0.4, 0, 0]} rotation={[0, 0.2, 0]}>
+          <boxGeometry args={[0.1, 1, 0.4]} />
+          <primitive object={carbonFiberBlack} attach="material" />
         </mesh>
-        <mesh position={[-0.34, -0.05, 0]} rotation={[0, 0, -0.08]}>
-          <boxGeometry args={[0.22, 0.95, 0.42]} />
-          <meshPhysicalMaterial {...blueSuit} />
+        <mesh position={[-0.4, 0, 0]} rotation={[0, -0.2, 0]}>
+          <boxGeometry args={[0.1, 1, 0.4]} />
+          <primitive object={carbonFiberBlack} attach="material" />
         </mesh>
       </group>
 
-      <group ref={armRef} position={[0.52, 1.7, 0]}>
-        <mesh><sphereGeometry args={[0.2]} /><meshPhysicalMaterial {...redSuit} /></mesh>
-        <mesh position={[0.1, -0.3, 0]} rotation={[0, 0, -0.1]}><cylinderGeometry args={[0.13, 0.11, 0.65]} /><meshPhysicalMaterial {...redSuit} /></mesh>
-        <group position={[0.15, -0.6, 0]}>
-          <mesh position={[0, -0.35, 0]}><cylinderGeometry args={[0.12, 0.09, 0.75]} /><meshPhysicalMaterial {...redSuit} /></mesh>
-          <mesh position={[0, -0.85, 0]}><sphereGeometry args={[0.1]} /><meshPhysicalMaterial {...redSuit} /></mesh>
+      {/* ARMS */}
+      {/* Right Arm */}
+      <group position={[0.55, 2.2, 0]}>
+        <mesh position={[0.1, -0.3, 0]} rotation={[0, 0, -0.1]}>
+          <cylinderGeometry args={[0.12, 0.1, 0.7, 32]} />
+          <primitive object={metallicRed} attach="material" />
+        </mesh>
+        <group position={[0.15, -0.65, 0]}>
+          <mesh position={[0, -0.35, 0]}>
+            <cylinderGeometry args={[0.1, 0.09, 0.75, 32]} />
+            <primitive object={metallicRed} attach="material" />
+          </mesh>
+          {/* Hand/Gauntlet */}
+          <mesh position={[0, -0.8, 0]}>
+            <sphereGeometry args={[0.1, 16, 16]} scale={[1, 1.2, 1]} />
+            <primitive object={metallicRed} attach="material" />
+          </mesh>
         </group>
       </group>
 
-      <group ref={leftArmRef} position={[-0.52, 1.7, 0]}>
-        <mesh><sphereGeometry args={[0.2]} /><meshPhysicalMaterial {...redSuit} /></mesh>
-        <mesh position={[-0.1, -0.3, 0]} rotation={[0, 0, 0.1]}><cylinderGeometry args={[0.13, 0.11, 0.65]} /><meshPhysicalMaterial {...redSuit} /></mesh>
-        <group position={[-0.15, -0.6, 0]}>
-          <mesh position={[0, -0.35, 0]}><cylinderGeometry args={[0.12, 0.09, 0.75]} /><meshPhysicalMaterial {...redSuit} /></mesh>
-          <mesh position={[0, -0.85, 0]}><sphereGeometry args={[0.1]} /><meshPhysicalMaterial {...redSuit} /></mesh>
+      {/* Left Arm */}
+      <group position={[-0.55, 2.2, 0]}>
+        <mesh position={[-0.1, -0.3, 0]} rotation={[0, 0, 0.1]}>
+          <cylinderGeometry args={[0.12, 0.1, 0.7, 32]} />
+          <primitive object={metallicRed} attach="material" />
+        </mesh>
+        <group position={[-0.15, -0.65, 0]}>
+          <mesh position={[0, -0.35, 0]}>
+            <cylinderGeometry args={[0.1, 0.09, 0.75, 32]} />
+            <primitive object={metallicRed} attach="material" />
+          </mesh>
+          {/* Hand/Gauntlet */}
+          <mesh position={[0, -0.8, 0]}>
+            <sphereGeometry args={[0.1, 16, 16]} scale={[1, 1.2, 1]} />
+            <primitive object={metallicRed} attach="material" />
+          </mesh>
         </group>
       </group>
 
-      <group position={[-0.24, 0.55, 0]}>
-        <mesh position={[0, -0.5, 0]}><cylinderGeometry args={[0.19, 0.16, 1.15]} /><meshPhysicalMaterial {...blueSuit} /></mesh>
-        <mesh position={[0, -1.5, 0]}><cylinderGeometry args={[0.17, 0.14, 1.05]} /><meshPhysicalMaterial {...redSuit} /></mesh>
-        <mesh position={[0, -2.1, 0.12]}><boxGeometry args={[0.23, 0.16, 0.48]} /><meshPhysicalMaterial {...redSuit} /></mesh>
-      </group>
-      <group position={[0.24, 0.55, 0]}>
-        <mesh position={[0, -0.5, 0]}><cylinderGeometry args={[0.19, 0.16, 1.15]} /><meshPhysicalMaterial {...blueSuit} /></mesh>
-        <mesh position={[0, -1.5, 0]}><cylinderGeometry args={[0.17, 0.14, 1.05]} /><meshPhysicalMaterial {...redSuit} /></mesh>
-        <mesh position={[0, -2.1, 0.12]}><boxGeometry args={[0.23, 0.16, 0.48]} /><meshPhysicalMaterial {...redSuit} /></mesh>
+      {/* LEGS */}
+      {/* Right Leg */}
+      <group position={[0.22, 0.6, 0]}>
+        <mesh position={[0, -0.6, 0]}>
+          <cylinderGeometry args={[0.2, 0.16, 1.2, 32]} />
+          <primitive object={carbonFiberBlack} attach="material" />
+        </mesh>
+        <group position={[0, -1.2, 0]}>
+          <mesh position={[0, -0.5, 0]}>
+            <cylinderGeometry args={[0.16, 0.12, 1.0, 32]} />
+            <primitive object={metallicRed} attach="material" />
+          </mesh>
+          {/* Foot */}
+          <mesh position={[0, -1.05, 0.15]}>
+            <boxGeometry args={[0.18, 0.15, 0.4]} />
+            <primitive object={metallicRed} attach="material" />
+          </mesh>
+        </group>
       </group>
 
-      <mesh position={[0, -2.2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[1.5, 32]} />
-        <meshStandardMaterial color="#ff0000" transparent opacity={0.05} />
-      </mesh>
+      {/* Left Leg */}
+      <group position={[-0.22, 0.6, 0]}>
+        <mesh position={[0, -0.6, 0]}>
+          <cylinderGeometry args={[0.2, 0.16, 1.2, 32]} />
+          <primitive object={carbonFiberBlack} attach="material" />
+        </mesh>
+        <group position={[0, -1.2, 0]}>
+          <mesh position={[0, -0.5, 0]}>
+            <cylinderGeometry args={[0.16, 0.12, 1.0, 32]} />
+            <primitive object={metallicRed} attach="material" />
+          </mesh>
+          {/* Foot */}
+          <mesh position={[0, -1.05, 0.15]}>
+            <boxGeometry args={[0.18, 0.15, 0.4]} />
+            <primitive object={metallicRed} attach="material" />
+          </mesh>
+        </group>
+      </group>
+
+      {/* Hero Lighting Anchor */}
+      <pointLight position={[0, 1.5, 0.5]} intensity={2} color="#ffffff" distance={5} />
     </group>
   );
 };
