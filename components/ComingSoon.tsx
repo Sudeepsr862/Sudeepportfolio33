@@ -24,8 +24,8 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          _subject: `🚀 WAITLIST: ${formData.name}`,
-          message: `User ${formData.name} (${formData.email}) is waiting for the launch.`
+          _subject: `🚀 INTEREST: ${formData.name}`,
+          message: `User ${formData.name} (${formData.email}) expressed interest in next-gen projects.`
         }),
       });
 
@@ -60,8 +60,8 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
           
           <p className={`text-lg max-w-2xl mx-auto mb-10 opacity-70 leading-relaxed ${isLightOn ? 'text-zinc-700' : 'text-zinc-300'}`}>
             I'm currently building the next generation of <span className="text-red-600 font-bold">AI-driven experiences</span>, 
-            immersive <span className="text-red-600 font-bold">interactive websites</span>, and high-performance creative tools. 
-            The waitlist is now open for the first round of experimental drops.
+            immersive <span className="text-red-600 font-bold">interactive websites</span>, and more. <br/>
+            <span className="italic mt-4 block">If you have interest in these projects, you can submit your details below for early access.</span>
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mb-16 opacity-50">
