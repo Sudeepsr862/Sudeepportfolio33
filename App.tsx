@@ -5,6 +5,7 @@ import { About } from './components/About';
 import { VideoEdits } from './components/VideoEdits';
 import { Skills } from './components/Skills';
 import { Portfolio } from './components/Portfolio';
+import { ComingSoon } from './components/ComingSoon';
 import { Footer } from './components/Footer';
 import { InteractiveBackground } from './components/Scene/InteractiveBackground';
 import { SwingingLight } from './components/Scene/SwingingLight';
@@ -48,6 +49,8 @@ const App: React.FC = () => {
         <Skills isLightOn={isLightOn} />
         <Portfolio isLightOn={isLightOn} />
         <VideoEdits isLightOn={isLightOn} />
+        <ComingSoon isLightOn={isLightOn} />
+        
         <section id="contact" className={`py-24 px-6 border-t ${isLightOn ? 'border-zinc-200' : 'border-white/5'}`}>
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-bold mb-8">Get In Touch</h2>
