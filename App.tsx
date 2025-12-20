@@ -13,7 +13,7 @@ import { SwingingLight } from './components/Scene/SwingingLight';
 import { ChatWidget } from './components/ChatWidget';
 import { GameModal } from './components/SpiderGame';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Music, Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX } from 'lucide-react';
 
 const App: React.FC = () => {
   const [isBulbGlowing, setIsBulbGlowing] = useState(false);
@@ -29,6 +29,7 @@ const App: React.FC = () => {
   const toggleMusic = () => {
     if (!audioRef.current) return;
     
+    // Play on first interaction if not already playing (handles browser policy)
     if (!hasInteracted) {
       audioRef.current.play().catch(e => console.log("Playback blocked:", e));
       setHasInteracted(true);
@@ -37,6 +38,11 @@ const App: React.FC = () => {
     const newMutedState = !isMuted;
     audioRef.current.muted = newMutedState;
     setIsMuted(newMutedState);
+    
+    // Ensure playback resumes if unmuting
+    if (!newMutedState) {
+        audioRef.current.play().catch(e => console.log("Play error:", e));
+    }
   };
 
   const isLightOn = isBulbGlowing;
@@ -44,23 +50,23 @@ const App: React.FC = () => {
   return (
     <div className={`relative min-h-screen selection:bg-red-500/20 overflow-x-hidden transition-colors duration-700 ${isLightOn ? 'bg-zinc-50 text-zinc-900' : 'bg-[#050505] text-white'}`}>
       
-      {/* Background Audio (Sunflower Vibe) */}
+      {/* Background Audio (Sunflower - Spider-Man: Into the Spider-Verse) */}
       <audio 
         ref={audioRef}
-        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" 
+        src="https://www.myinstants.com/media/sounds/post-malone-swae-lee-sunflower-spider-man-into-the-spider-verse.mp3" 
         loop 
         muted={isMuted}
       />
 
-      {/* Music Toggle Button (Top Left) */}
+      {/* Music Toggle Button (Top Left Corner) */}
       <motion.button
-        initial={{ opacity: 0, x: -20 }}
+        initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
         onClick={toggleMusic}
-        className={`fixed top-6 left-6 z-[100] p-4 rounded-2xl flex items-center justify-center border transition-all duration-500 shadow-2xl backdrop-blur-md ${
+        className={`fixed top-6 left-6 z-[100] p-4 rounded-2xl flex items-center justify-center border transition-all duration-500 shadow-2xl backdrop-blur-md group ${
           isLightOn 
-            ? 'bg-white/80 border-zinc-200 text-zinc-900' 
-            : 'bg-black/40 border-white/10 text-white'
+            ? 'bg-white/80 border-zinc-200 text-zinc-900 shadow-zinc-200/50' 
+            : 'bg-black/40 border-white/10 text-white shadow-black/50'
         } ${!isMuted ? 'ring-2 ring-red-600 ring-offset-2 ring-offset-transparent' : ''}`}
       >
         <div className="relative">
@@ -72,9 +78,18 @@ const App: React.FC = () => {
             </span>
           )}
         </div>
-        <div className={`ml-3 overflow-hidden transition-all duration-500 ${!isMuted ? 'w-24' : 'w-0'}`}>
-          <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Sunflower 🕸️</span>
+        <div className={`ml-3 overflow-hidden transition-all duration-500 flex items-center ${!isMuted ? 'w-36' : 'w-0'}`}>
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] whitespace-nowrap italic">
+            SUNFLOWER 🌻 <span className="text-red-600">🕸️</span>
+          </span>
         </div>
+        
+        {/* Hover Tooltip */}
+        {isMuted && (
+          <div className="absolute left-full ml-4 px-3 py-1 bg-red-600 text-white text-[8px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+            Unmute the vibe
+          </div>
+        )}
       </motion.button>
       
       {/* 3D Background Layer */}
