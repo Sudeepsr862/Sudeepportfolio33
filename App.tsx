@@ -1,4 +1,5 @@
-import React, { useState, Suspense } from 'react';
+
+import React, { useState, Suspense, useRef, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
@@ -11,20 +12,70 @@ import { InteractiveBackground } from './components/Scene/InteractiveBackground'
 import { SwingingLight } from './components/Scene/SwingingLight';
 import { ChatWidget } from './components/ChatWidget';
 import { GameModal } from './components/SpiderGame';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Music, Volume2, VolumeX } from 'lucide-react';
 
 const App: React.FC = () => {
   const [isBulbGlowing, setIsBulbGlowing] = useState(false);
   const [isGameOpen, setIsGameOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const toggleLight = () => {
     setIsBulbGlowing(!isBulbGlowing);
+  };
+
+  const toggleMusic = () => {
+    if (!audioRef.current) return;
+    
+    if (!hasInteracted) {
+      audioRef.current.play().catch(e => console.log("Playback blocked:", e));
+      setHasInteracted(true);
+    }
+
+    const newMutedState = !isMuted;
+    audioRef.current.muted = newMutedState;
+    setIsMuted(newMutedState);
   };
 
   const isLightOn = isBulbGlowing;
 
   return (
     <div className={`relative min-h-screen selection:bg-red-500/20 overflow-x-hidden transition-colors duration-700 ${isLightOn ? 'bg-zinc-50 text-zinc-900' : 'bg-[#050505] text-white'}`}>
+      
+      {/* Background Audio (Sunflower Vibe) */}
+      <audio 
+        ref={audioRef}
+        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" 
+        loop 
+        muted={isMuted}
+      />
+
+      {/* Music Toggle Button (Top Left) */}
+      <motion.button
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        onClick={toggleMusic}
+        className={`fixed top-6 left-6 z-[100] p-4 rounded-2xl flex items-center justify-center border transition-all duration-500 shadow-2xl backdrop-blur-md ${
+          isLightOn 
+            ? 'bg-white/80 border-zinc-200 text-zinc-900' 
+            : 'bg-black/40 border-white/10 text-white'
+        } ${!isMuted ? 'ring-2 ring-red-600 ring-offset-2 ring-offset-transparent' : ''}`}
+      >
+        <div className="relative">
+          {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} className="text-red-500" />}
+          {!isMuted && (
+            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+            </span>
+          )}
+        </div>
+        <div className={`ml-3 overflow-hidden transition-all duration-500 ${!isMuted ? 'w-24' : 'w-0'}`}>
+          <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Sunflower 🕸️</span>
+        </div>
+      </motion.button>
       
       {/* 3D Background Layer */}
       <div className="fixed inset-0 z-0 pointer-events-none">
