@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, User, CheckCircle2, Loader2, Clock, ShieldCheck, AlertCircle, ArrowRight } from 'lucide-react';
+import { Mail, User, CheckCircle2, Loader2, Clock, ShieldCheck, AlertCircle, ArrowRight, Zap, Globe, Sparkles } from 'lucide-react';
 
 interface Props {
   isLightOn: boolean;
@@ -51,16 +51,30 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
           transition={{ duration: 0.6 }}
         >
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border font-mono text-[10px] mb-8 tracking-widest uppercase ${isLightOn ? 'bg-zinc-100 border-zinc-200 text-zinc-600' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}>
-            <Clock size={12} /> Access Protocol v2.3
+            <Clock size={12} /> Roadmap: Phase 02
           </div>
           
           <h2 className={`text-5xl md:text-7xl font-bold tracking-tight uppercase mb-6 ${isLightOn ? 'text-zinc-900' : 'text-white'}`}>
             COMING SOON
           </h2>
           
-          <p className={`text-lg max-w-xl mx-auto mb-12 opacity-60 ${isLightOn ? 'text-zinc-700' : 'text-zinc-300'}`}>
-            The next chapter of the journey is almost here. Secure your spot in the early access program.
+          <p className={`text-lg max-w-2xl mx-auto mb-10 opacity-70 leading-relaxed ${isLightOn ? 'text-zinc-700' : 'text-zinc-300'}`}>
+            I'm currently building the next generation of <span className="text-red-600 font-bold">AI-driven experiences</span>, 
+            immersive <span className="text-red-600 font-bold">interactive websites</span>, and high-performance creative tools. 
+            The waitlist is now open for the first round of experimental drops.
           </p>
+
+          <div className="flex flex-wrap justify-center gap-4 mb-16 opacity-50">
+            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest">
+              <Zap size={14} className="text-red-500" /> Next-Gen AI
+            </div>
+            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest">
+              <Globe size={14} className="text-red-500" /> 3D Interaction
+            </div>
+            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest">
+              <Sparkles size={14} className="text-red-500" /> Creative Coding
+            </div>
+          </div>
 
           <AnimatePresence mode="wait">
             {status === 'success' ? (

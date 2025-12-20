@@ -48,51 +48,77 @@ export const Portfolio: React.FC<Props> = ({ isLightOn }) => {
         {projects.map((project, idx) => (
           <motion.div
             key={project.title}
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            whileHover={{ 
-              y: -12, 
-              scale: 1.05,
-              transition: { type: "spring", stiffness: 300, damping: 20 }
-            }}
-            className={`group rounded-3xl overflow-hidden border transition-all duration-500 will-change-transform ${
+            transition={{ duration: 0.5, delay: idx * 0.1 }}
+            whileHover="hover"
+            className={`group relative rounded-[2rem] overflow-hidden border transition-all duration-500 ${
               isLightOn 
-                ? 'bg-white border-zinc-200 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)]' 
-                : 'bg-zinc-900 border-zinc-800 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)]'
+                ? 'bg-white border-zinc-200 hover:bg-zinc-50/50' 
+                : 'bg-zinc-900 border-zinc-800 hover:bg-zinc-800/40'
             }`}
           >
             <a href={project.link} target="_blank" rel="noopener noreferrer" className="block">
               <div className="aspect-video overflow-hidden relative">
-                <img 
+                <motion.img 
+                  variants={{
+                    hover: { scale: 1.1, y: -10 }
+                  }}
+                  transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
                   src={project.image} 
                   alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
+                  className="w-full h-full object-cover"
                 />
-                <div className={`absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+                <motion.div 
+                  variants={{
+                    hover: { opacity: 1 }
+                  }}
+                  className={`absolute inset-0 bg-cyan-500/5 opacity-0 transition-opacity duration-500 pointer-events-none`} 
+                />
               </div>
             </a>
-            <div className="p-8">
+            
+            <div className="p-8 relative">
               <div className="flex justify-between items-start mb-4">
                 <a href={project.link} target="_blank" rel="noopener noreferrer">
-                  <h3 className="text-2xl font-bold hover:text-cyan-500 transition-colors">{project.title}</h3>
+                  <h3 className={`text-2xl font-bold transition-colors duration-300 ${isLightOn ? 'text-zinc-900 group-hover:text-cyan-600' : 'text-white group-hover:text-cyan-400'}`}>
+                    {project.title}
+                  </h3>
                 </a>
-                <div className="flex gap-3">
-                  <Github size={20} className="opacity-40 hover:opacity-100 cursor-pointer transition-opacity" />
-                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="opacity-40 hover:opacity-100 transition-opacity">
-                    <ExternalLink size={20} />
+                <div className="flex gap-4">
+                  <Github size={18} className="opacity-30 hover:opacity-100 cursor-pointer transition-opacity" />
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="opacity-30 hover:opacity-100 transition-opacity">
+                    <ExternalLink size={18} />
                   </a>
                 </div>
               </div>
-              <p className="opacity-60 mb-6 text-sm leading-relaxed">{project.desc}</p>
+              
+              <p className="opacity-50 mb-8 text-sm leading-relaxed group-hover:opacity-70 transition-opacity duration-300">
+                {project.desc}
+              </p>
+              
               <div className="flex flex-wrap gap-2">
                 {project.tags.map(tag => (
-                  <span key={tag} className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-500 text-[10px] font-mono uppercase tracking-wider">
+                  <span key={tag} className={`px-3 py-1 rounded-md text-[9px] font-mono uppercase tracking-wider transition-colors duration-300 ${
+                    isLightOn 
+                      ? 'bg-zinc-100 text-zinc-600 group-hover:bg-cyan-50 group-hover:text-cyan-700' 
+                      : 'bg-zinc-800 text-zinc-400 group-hover:bg-cyan-900/30 group-hover:text-cyan-300'
+                  }`}>
                     {tag}
                   </span>
                 ))}
               </div>
             </div>
+
+            {/* Subtle bottom accent line on hover */}
+            <motion.div 
+              variants={{
+                hover: { scaleX: 1, opacity: 1 }
+              }}
+              initial={{ scaleX: 0, opacity: 0 }}
+              className="absolute bottom-0 left-0 right-0 h-1 bg-cyan-500 origin-left"
+            />
           </motion.div>
         ))}
       </div>
