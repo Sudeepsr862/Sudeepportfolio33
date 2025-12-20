@@ -1,11 +1,9 @@
-
 import React, { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { User, MapPin, GraduationCap, Palette } from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
 import { SpiderManCharacter } from './Scene/SpiderManCharacter';
 import { OrbitControls, PerspectiveCamera, Environment, Float } from '@react-three/drei';
-// Import THREE to resolve reference error in Canvas gl property
 import * as THREE from 'three';
 
 const AmbientLight = 'ambientLight' as any;
@@ -57,42 +55,40 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
           </div>
         </div>
 
-        <div className="relative h-[650px] w-full group">
-          {/* USER REQUEST: High-fidelity realistic Spider-Man Model Container */}
-          <div className="h-full w-full rounded-[3rem] overflow-hidden border-2 border-red-600/20 light-web-pattern transition-all duration-1000 shadow-2xl bg-zinc-950">
-            <Suspense fallback={<div className="flex items-center justify-center h-full font-mono text-red-500 animate-pulse uppercase tracking-[0.2em]">Synchronizing Marvel Model...</div>}>
+        <div className="relative h-[700px] w-full group">
+          <div className="h-full w-full rounded-[3.5rem] overflow-hidden border-2 border-red-600/20 shadow-2xl bg-zinc-950">
+            <Suspense fallback={<div className="flex items-center justify-center h-full font-mono text-red-500 animate-pulse uppercase tracking-[0.2em]">Materializing Hero...</div>}>
               <Canvas shadows dpr={[1, 2]} gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}>
-                <PerspectiveCamera makeDefault position={[0, 0, 7]} fov={35} />
-                <AmbientLight intensity={0.5} />
+                <PerspectiveCamera makeDefault position={[0, 1, 8]} fov={30} />
+                <AmbientLight intensity={0.6} />
                 
-                {/* Cinema Grade Cinematic Lighting for high detail */}
-                <SpotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} color="#ffffff" castShadow />
-                <PointLight position={[-10, 5, -5]} color="#00f3ff" intensity={1} />
-                <PointLight position={[10, -5, 5]} color="#ff2222" intensity={2} />
-                <Environment preset="city" />
+                {/* Cinema Studio Lighting */}
+                <SpotLight position={[10, 10, 10]} angle={0.2} penumbra={1} intensity={3} color="#ffffff" castShadow />
+                <PointLight position={[-10, 5, -5]} color="#00f3ff" intensity={0.8} />
+                <PointLight position={[10, -5, 5]} color="#ff4400" intensity={1.5} />
+                <Environment preset="night" />
                 
-                <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
+                <Float speed={1.2} rotationIntensity={0.3} floatIntensity={0.6}>
                   <SpiderManCharacter />
                 </Float>
                 
                 <OrbitControls 
                   enableZoom={false} 
                   minPolarAngle={Math.PI / 3} 
-                  maxPolarAngle={Math.PI / 1.5}
+                  maxPolarAngle={Math.PI / 1.6}
                   enableDamping={true}
                   dampingFactor={0.05}
-                  autoRotate={false}
                 />
               </Canvas>
             </Suspense>
           </div>
           
           <motion.div 
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="absolute -top-4 -right-4 px-8 py-4 bg-red-600 text-white text-[10px] font-black rounded-2xl shadow-[0_15px_40px_rgba(220,38,38,0.2)] pointer-events-none group-hover:scale-110 transition-transform uppercase tracking-widest"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-6 -right-6 px-10 py-5 bg-red-600 text-white text-[11px] font-black rounded-3xl shadow-[0_20px_50px_rgba(220,38,38,0.3)] pointer-events-none group-hover:scale-110 transition-transform uppercase tracking-[0.2em] italic"
           >
-            PETER PARKER VIBE v4.5 🕸️
+            MARVEL EDITION 🕸️
           </motion.div>
         </div>
       </motion.div>

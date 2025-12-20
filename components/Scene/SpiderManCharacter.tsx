@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -12,20 +11,20 @@ export const SpiderManCharacter: React.FC = () => {
 
   // Materials for the "Integrated Suit" (Tom Holland Style)
   const metallicRed = useMemo(() => new THREE.MeshPhysicalMaterial({
-    color: "#b00000",
-    metalness: 0.6,
-    roughness: 0.3,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.1,
+    color: "#a00000",
+    metalness: 0.5,
+    roughness: 0.4,
+    clearcoat: 0.8,
+    clearcoatRoughness: 0.2,
     sheen: 1,
     sheenColor: "#ff0000",
   }), []);
 
   const carbonFiberBlack = useMemo(() => new THREE.MeshPhysicalMaterial({
-    color: "#050505",
-    metalness: 0.8,
-    roughness: 0.4,
-    clearcoat: 0.5,
+    color: "#080808",
+    metalness: 0.9,
+    roughness: 0.5,
+    clearcoat: 0.3,
   }), []);
 
   const highGlossGold = useMemo(() => new THREE.MeshPhysicalMaterial({
@@ -33,211 +32,171 @@ export const SpiderManCharacter: React.FC = () => {
     metalness: 1.0,
     roughness: 0.1,
     emissive: "#aa8800",
-    emissiveIntensity: 0.2,
+    emissiveIntensity: 0.1,
   }), []);
 
   const lensWhite = useMemo(() => new THREE.MeshStandardMaterial({
     color: "#ffffff",
     emissive: "#ffffff",
-    emissiveIntensity: 1.5,
+    emissiveIntensity: 2.0,
   }), []);
+
+  // Optimized Geometries for Human Silhouette
+  const headGeo = useMemo(() => new THREE.SphereGeometry(0.28, 32, 32), []);
+  const chestGeo = useMemo(() => new THREE.SphereGeometry(0.5, 32, 32), []);
+  const upperArmGeo = useMemo(() => new THREE.CylinderGeometry(0.1, 0.08, 0.7, 16), []);
+  const forearmGeo = useMemo(() => new THREE.CylinderGeometry(0.08, 0.06, 0.7, 16), []);
+  const thighGeo = useMemo(() => new THREE.CylinderGeometry(0.18, 0.14, 1.1, 16), []);
+  const calfGeo = useMemo(() => new THREE.CylinderGeometry(0.14, 0.09, 1.0, 16), []);
 
   useFrame((state) => {
     if (!groupRef.current) return;
     const t = state.clock.getElapsedTime();
 
-    // Natural breathing and floating animation
-    groupRef.current.position.y = Math.sin(t * 1.5) * 0.05 - 0.5;
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, state.mouse.x * 0.2, 0.05);
+    // Natural human-like swaying/floating
+    groupRef.current.position.y = Math.sin(t * 1.2) * 0.06 - 0.5;
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, state.mouse.x * 0.3, 0.05);
 
-    // Head tracking
+    // Dynamic Head Tracking
     if (headRef.current) {
-      headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, state.mouse.x * 0.8, 0.1);
-      headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, -state.mouse.y * 0.5, 0.1);
+      headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, state.mouse.x * 0.6, 0.1);
+      headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, -state.mouse.y * 0.4, 0.1);
     }
 
-    // Mechanical Eye/Lens "Shutter" effect
-    const eyeScaleY = hovered ? 0.6 : (0.9 + Math.sin(t * 3) * 0.05); // Blink/Squint
+    // Interactive Mask Lenses (Mechanical Shutter Effect)
+    const eyeScaleY = hovered ? 0.5 : (0.9 + Math.sin(t * 4) * 0.02);
     if (leftEyeRef.current && rightEyeRef.current) {
-      leftEyeRef.current.scale.y = THREE.MathUtils.lerp(leftEyeRef.current.scale.y, eyeScaleY, 0.1);
-      rightEyeRef.current.scale.y = THREE.MathUtils.lerp(rightEyeRef.current.scale.y, eyeScaleY, 0.1);
+      leftEyeRef.current.scale.y = THREE.MathUtils.lerp(leftEyeRef.current.scale.y, eyeScaleY, 0.15);
+      rightEyeRef.current.scale.y = THREE.MathUtils.lerp(rightEyeRef.current.scale.y, eyeScaleY, 0.15);
     }
   });
 
   return (
-    <group ref={groupRef} scale={[0.75, 0.75, 0.75]}>
-      {/* HEAD */}
-      <group ref={headRef} position={[0, 2.5, 0]}>
-        <mesh castShadow>
-          <sphereGeometry args={[0.28, 64, 64]} scale={[1, 1.15, 1.05]} />
-          <primitive object={metallicRed} attach="material" />
-        </mesh>
+    <group 
+      ref={groupRef} 
+      scale={[0.8, 0.8, 0.8]}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+    >
+      {/* --- HEAD --- */}
+      <group ref={headRef} position={[0, 2.6, 0]}>
+        {/* Mask Base */}
+        <mesh castShadow geometry={headGeo} material={metallicRed} scale={[0.95, 1.15, 1.05]} />
         
-        {/* Mechanical Lenses */}
+        {/* Expressive Lenses */}
         <group position={[0, 0.05, 0.22]}>
-          {/* Left Lens */}
-          <group ref={leftEyeRef} position={[-0.14, 0.02, 0]} rotation={[0.1, 0.4, 0.1]}>
+          <group ref={leftEyeRef} position={[-0.13, 0.02, 0]} rotation={[0.1, 0.4, 0.1]}>
             <mesh>
               <boxGeometry args={[0.18, 0.22, 0.05]} />
               <meshStandardMaterial color="#000000" roughness={0} />
             </mesh>
             <mesh position={[0, 0, 0.02]}>
-              <boxGeometry args={[0.14, 0.18, 0.02]} />
+              <boxGeometry args={[0.15, 0.19, 0.01]} />
               <primitive object={lensWhite} attach="material" />
             </mesh>
           </group>
-          {/* Right Lens */}
-          <group ref={rightEyeRef} position={[0.14, 0.02, 0]} rotation={[0.1, -0.4, -0.1]}>
+          <group ref={rightEyeRef} position={[0.13, 0.02, 0]} rotation={[0.1, -0.4, -0.1]}>
             <mesh>
               <boxGeometry args={[0.18, 0.22, 0.05]} />
               <meshStandardMaterial color="#000000" roughness={0} />
             </mesh>
             <mesh position={[0, 0, 0.02]}>
-              <boxGeometry args={[0.14, 0.18, 0.02]} />
+              <boxGeometry args={[0.15, 0.19, 0.01]} />
               <primitive object={lensWhite} attach="material" />
             </mesh>
           </group>
         </group>
         
-        {/* Neck */}
-        <mesh position={[0, -0.3, 0]}>
-          <cylinderGeometry args={[0.14, 0.18, 0.4, 32]} />
-          <primitive object={metallicRed} attach="material" />
+        {/* Neck Integration */}
+        <mesh position={[0, -0.25, 0]} material={metallicRed}>
+          <cylinderGeometry args={[0.12, 0.16, 0.3, 16]} />
         </mesh>
       </group>
 
-      {/* TORSO */}
-      <group position={[0, 1.5, 0]}>
-        {/* Upper Chest */}
-        <mesh castShadow>
-          <sphereGeometry args={[0.5, 64, 64]} scale={[1, 1.1, 0.7]} />
-          <primitive object={metallicRed} attach="material" />
-        </mesh>
+      {/* --- UPPER BODY (Torso) --- */}
+      <group position={[0, 1.6, 0]}>
+        {/* Muscular Chest */}
+        <mesh castShadow geometry={chestGeo} material={metallicRed} scale={[1, 1.2, 0.75]} />
         
-        {/* Waist/Abdomen */}
-        <mesh position={[0, -0.4, 0]} castShadow>
-          <cylinderGeometry args={[0.38, 0.3, 0.8, 32]} />
-          <primitive object={carbonFiberBlack} attach="material" />
+        {/* Athletic Waist */}
+        <mesh position={[0, -0.45, 0]} castShadow material={carbonFiberBlack}>
+          <cylinderGeometry args={[0.35, 0.28, 0.9, 16]} />
         </mesh>
 
-        {/* Integrated Suit Gold Spider Logo (Chest & Back) */}
-        <group position={[0, 0.1, 0.35]}>
-          {/* Core Body */}
-          <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.08, 0.08, 0.05, 6]} />
-            <primitive object={highGlossGold} attach="material" />
+        {/* Integrated Gold Spider Logo */}
+        <group position={[0, 0.15, 0.38]}>
+          <mesh rotation={[Math.PI / 2, 0, 0]} material={highGlossGold}>
+            <cylinderGeometry args={[0.08, 0.08, 0.03, 6]} />
           </mesh>
-          {/* Top Legs */}
-          <mesh position={[0.2, 0.25, 0]} rotation={[0, 0, 1]}>
-            <boxGeometry args={[0.4, 0.04, 0.03]} />
-            <primitive object={highGlossGold} attach="material" />
-          </mesh>
-          <mesh position={[-0.2, 0.25, 0]} rotation={[0, 0, -1]}>
-            <boxGeometry args={[0.4, 0.04, 0.03]} />
-            <primitive object={highGlossGold} attach="material" />
-          </mesh>
-          {/* Bottom Legs */}
-          <mesh position={[0.15, -0.25, 0]} rotation={[0, 0, -0.8]}>
-            <boxGeometry args={[0.4, 0.04, 0.03]} />
-            <primitive object={highGlossGold} attach="material" />
-          </mesh>
-          <mesh position={[-0.15, -0.25, 0]} rotation={[0, 0, 0.8]}>
-            <boxGeometry args={[0.4, 0.04, 0.03]} />
-            <primitive object={highGlossGold} attach="material" />
-          </mesh>
+          {/* Detailed Spider Legs */}
+          {[1, -1].map(side => (
+            <group key={side} scale={[side, 1, 1]}>
+              <mesh position={[0.2, 0.25, 0]} rotation={[0, 0, 1]} material={highGlossGold}>
+                <boxGeometry args={[0.4, 0.03, 0.02]} />
+              </mesh>
+              <mesh position={[0.15, -0.25, 0]} rotation={[0, 0, -0.8]} material={highGlossGold}>
+                <boxGeometry args={[0.4, 0.03, 0.02]} />
+              </mesh>
+            </group>
+          ))}
         </group>
 
-        {/* Side Panels (Integrated Suit aesthetic) */}
-        <mesh position={[0.4, 0, 0]} rotation={[0, 0.2, 0]}>
-          <boxGeometry args={[0.1, 1, 0.4]} />
-          <primitive object={carbonFiberBlack} attach="material" />
+        {/* Suit Panels (Sides) */}
+        <mesh position={[0.38, -0.1, 0]} rotation={[0, 0.3, 0]} material={carbonFiberBlack}>
+          <boxGeometry args={[0.1, 1, 0.35]} />
         </mesh>
-        <mesh position={[-0.4, 0, 0]} rotation={[0, -0.2, 0]}>
-          <boxGeometry args={[0.1, 1, 0.4]} />
-          <primitive object={carbonFiberBlack} attach="material" />
+        <mesh position={[-0.38, -0.1, 0]} rotation={[0, -0.3, 0]} material={carbonFiberBlack}>
+          <boxGeometry args={[0.1, 1, 0.35]} />
         </mesh>
       </group>
 
-      {/* ARMS */}
-      {/* Right Arm */}
-      <group position={[0.55, 2.2, 0]}>
-        <mesh position={[0.1, -0.3, 0]} rotation={[0, 0, -0.1]}>
-          <cylinderGeometry args={[0.12, 0.1, 0.7, 32]} />
-          <primitive object={metallicRed} attach="material" />
-        </mesh>
-        <group position={[0.15, -0.65, 0]}>
-          <mesh position={[0, -0.35, 0]}>
-            <cylinderGeometry args={[0.1, 0.09, 0.75, 32]} />
-            <primitive object={metallicRed} attach="material" />
+      {/* --- ARMS --- */}
+      {[1, -1].map(side => (
+        <group key={side} position={[side * 0.52, 2.2, 0]}>
+          {/* Shoulder Musculature */}
+          <mesh material={metallicRed} castShadow>
+            <sphereGeometry args={[0.18, 16, 16]} />
           </mesh>
-          {/* Hand/Gauntlet */}
-          <mesh position={[0, -0.8, 0]}>
-            <sphereGeometry args={[0.1, 16, 16]} scale={[1, 1.2, 1]} />
-            <primitive object={metallicRed} attach="material" />
-          </mesh>
+          {/* Bicep/Upper Arm */}
+          <mesh position={[side * 0.1, -0.3, 0]} rotation={[0, 0, side * -0.1]} geometry={upperArmGeo} material={metallicRed} />
+          {/* Forearm & Hand */}
+          <group position={[side * 0.15, -0.65, 0]}>
+            <mesh position={[0, -0.35, 0]} geometry={forearmGeo} material={metallicRed} />
+            {/* Clenched Fist */}
+            <mesh position={[0, -0.75, 0]} material={metallicRed}>
+              <sphereGeometry args={[0.09, 12, 12]} scale={[1, 1.2, 0.9]} />
+            </mesh>
+          </group>
         </group>
-      </group>
+      ))}
 
-      {/* Left Arm */}
-      <group position={[-0.55, 2.2, 0]}>
-        <mesh position={[-0.1, -0.3, 0]} rotation={[0, 0, 0.1]}>
-          <cylinderGeometry args={[0.12, 0.1, 0.7, 32]} />
-          <primitive object={metallicRed} attach="material" />
-        </mesh>
-        <group position={[-0.15, -0.65, 0]}>
-          <mesh position={[0, -0.35, 0]}>
-            <cylinderGeometry args={[0.1, 0.09, 0.75, 32]} />
-            <primitive object={metallicRed} attach="material" />
-          </mesh>
-          {/* Hand/Gauntlet */}
-          <mesh position={[0, -0.8, 0]}>
-            <sphereGeometry args={[0.1, 16, 16]} scale={[1, 1.2, 1]} />
-            <primitive object={metallicRed} attach="material" />
-          </mesh>
+      {/* --- LEGS --- */}
+      {[1, -1].map(side => (
+        <group key={side} position={[side * 0.22, 0.7, 0]}>
+          {/* Thigh */}
+          <mesh position={[0, -0.5, 0]} geometry={thighGeo} material={carbonFiberBlack} />
+          {/* Calf & Boot */}
+          <group position={[0, -1.0, 0]}>
+            {/* Knee Pad Area */}
+            <mesh material={metallicRed}>
+              <sphereGeometry args={[0.12, 12, 12]} />
+            </mesh>
+            <mesh position={[0, -0.5, 0]} geometry={calfGeo} material={metallicRed} />
+            {/* Detailed Hero Boot */}
+            <group position={[0, -1.0, 0.1]}>
+              <mesh material={metallicRed}>
+                <boxGeometry args={[0.18, 0.14, 0.42]} />
+              </mesh>
+              <mesh position={[0, -0.06, 0]} material={carbonFiberBlack}>
+                <boxGeometry args={[0.2, 0.05, 0.45]} />
+              </mesh>
+            </group>
+          </group>
         </group>
-      </group>
+      ))}
 
-      {/* LEGS */}
-      {/* Right Leg */}
-      <group position={[0.22, 0.6, 0]}>
-        <mesh position={[0, -0.6, 0]}>
-          <cylinderGeometry args={[0.2, 0.16, 1.2, 32]} />
-          <primitive object={carbonFiberBlack} attach="material" />
-        </mesh>
-        <group position={[0, -1.2, 0]}>
-          <mesh position={[0, -0.5, 0]}>
-            <cylinderGeometry args={[0.16, 0.12, 1.0, 32]} />
-            <primitive object={metallicRed} attach="material" />
-          </mesh>
-          {/* Foot */}
-          <mesh position={[0, -1.05, 0.15]}>
-            <boxGeometry args={[0.18, 0.15, 0.4]} />
-            <primitive object={metallicRed} attach="material" />
-          </mesh>
-        </group>
-      </group>
-
-      {/* Left Leg */}
-      <group position={[-0.22, 0.6, 0]}>
-        <mesh position={[0, -0.6, 0]}>
-          <cylinderGeometry args={[0.2, 0.16, 1.2, 32]} />
-          <primitive object={carbonFiberBlack} attach="material" />
-        </mesh>
-        <group position={[0, -1.2, 0]}>
-          <mesh position={[0, -0.5, 0]}>
-            <cylinderGeometry args={[0.16, 0.12, 1.0, 32]} />
-            <primitive object={metallicRed} attach="material" />
-          </mesh>
-          {/* Foot */}
-          <mesh position={[0, -1.05, 0.15]}>
-            <boxGeometry args={[0.18, 0.15, 0.4]} />
-            <primitive object={metallicRed} attach="material" />
-          </mesh>
-        </group>
-      </group>
-
-      {/* Hero Lighting Anchor */}
-      <pointLight position={[0, 1.5, 0.5]} intensity={2} color="#ffffff" distance={5} />
+      {/* Cinematic Highlight Lamp */}
+      <pointLight position={[0, 1.8, 1.2]} intensity={2.5} color="#ffffff" distance={6} decay={2} />
     </group>
   );
 };
