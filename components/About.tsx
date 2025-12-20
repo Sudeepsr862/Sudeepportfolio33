@@ -32,22 +32,22 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
             Currently pursuing my B.E. in Artificial Intelligence and Machine Learning at <span className="text-red-500 font-bold">MITK Udupi</span>.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className={`p-6 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-zinc-50 border-zinc-200' : 'bg-zinc-900/50 border-zinc-800 hover:border-red-600/50 hover:bg-zinc-900'}`}>
+            <div className={`p-6 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-white border-zinc-200 shadow-sm' : 'bg-zinc-900/50 border-zinc-800 hover:border-red-600/50 hover:bg-zinc-900'}`}>
               <MapPin className="text-red-500 mb-3" size={24} />
               <h4 className="font-bold mb-1">Roots</h4>
               <p className="text-sm opacity-60">Sringeri, Karnataka</p>
             </div>
-            <div className={`p-6 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-zinc-50 border-zinc-200' : 'bg-zinc-900/50 border-zinc-800 hover:border-red-600/50 hover:bg-zinc-900'}`}>
+            <div className={`p-6 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-white border-zinc-200 shadow-sm' : 'bg-zinc-900/50 border-zinc-800 hover:border-red-600/50 hover:bg-zinc-900'}`}>
               <GraduationCap className="text-red-500 mb-3" size={24} />
               <h4 className="font-bold mb-1">Education</h4>
               <p className="text-sm opacity-60">MITK Udupi - AIML</p>
             </div>
-            <div className={`p-6 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-zinc-50 border-zinc-200' : 'bg-zinc-900/50 border-zinc-800 hover:border-red-600/50 hover:bg-zinc-900'}`}>
+            <div className={`p-6 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-white border-zinc-200 shadow-sm' : 'bg-zinc-900/50 border-zinc-800 hover:border-red-600/50 hover:bg-zinc-900'}`}>
               <Palette className="text-red-500 mb-3" size={24} />
               <h4 className="font-bold mb-1">Artistic Soul</h4>
               <p className="text-sm opacity-60">Pen Art & Sketching</p>
             </div>
-            <div className={`p-6 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-zinc-50 border-zinc-200' : 'bg-zinc-900/50 border-zinc-800 hover:border-red-600/50 hover:bg-zinc-900'}`}>
+            <div className={`p-6 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-white border-zinc-200 shadow-sm' : 'bg-zinc-900/50 border-zinc-800 hover:border-red-600/50 hover:bg-zinc-900'}`}>
               <User className="text-red-500 mb-3" size={24} />
               <h4 className="font-bold mb-1">Persona</h4>
               <p className="text-sm opacity-60">Creative Thinker</p>
@@ -56,17 +56,18 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
         </div>
 
         <div className="relative h-[650px] w-full group">
-          <div className={`h-full w-full rounded-[3rem] overflow-hidden border-2 transition-all duration-1000 ${isLightOn ? 'border-zinc-200 bg-zinc-100' : 'border-red-600/20 bg-[#080808] shadow-[0_0_100px_rgba(220,38,38,0.05)]'}`}>
+          {/* USER REQUEST: Container background light + red spider web pattern */}
+          <div className="h-full w-full rounded-[3rem] overflow-hidden border-2 border-red-600/20 light-web-pattern transition-all duration-1000 shadow-2xl">
             <Suspense fallback={<div className="flex items-center justify-center h-full font-mono text-red-500 animate-pulse uppercase tracking-[0.2em]">Synchronizing Hero...</div>}>
               <Canvas shadows dpr={[1, 2]}>
                 <PerspectiveCamera makeDefault position={[0, 0, 6]} fov={35} />
-                <AmbientLight intensity={0.5} />
+                <AmbientLight intensity={1.5} />
                 
-                {/* Cinematic Rim Lighting */}
-                <SpotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={10} color="#ffffff" castShadow />
-                <PointLight position={[-10, 5, -5]} color="#44aaff" intensity={5} />
-                <PointLight position={[10, -5, 5]} color="#ff2222" intensity={8} />
-                <PointLight position={[0, 10, -10]} color="#ffffff" intensity={2} /> {/* Backlight */}
+                {/* High contrast cinematic lighting for light background */}
+                <SpotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={15} color="#ffffff" castShadow />
+                <PointLight position={[-10, 5, -5]} color="#44aaff" intensity={12} />
+                <PointLight position={[10, -5, 5]} color="#ff2222" intensity={15} />
+                <PointLight position={[0, 10, -10]} color="#ffffff" intensity={5} />
                 
                 <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
                   <SpiderManCharacter />
@@ -87,7 +88,7 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
           <motion.div 
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="absolute -top-4 -right-4 px-8 py-4 bg-red-600 text-white text-[10px] font-black rounded-2xl shadow-[0_15px_40px_rgba(220,38,38,0.4)] pointer-events-none group-hover:scale-110 transition-transform uppercase tracking-widest"
+            className="absolute -top-4 -right-4 px-8 py-4 bg-red-600 text-white text-[10px] font-black rounded-2xl shadow-[0_15px_40px_rgba(220,38,38,0.2)] pointer-events-none group-hover:scale-110 transition-transform uppercase tracking-widest"
           >
             Web-Head Proto-Model v4.0 🕸️
           </motion.div>

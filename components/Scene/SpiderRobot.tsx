@@ -62,7 +62,8 @@ export const SpiderRobot: React.FC = () => {
     }
   });
 
-  const Leg = ({ rotation, isWaving = false }: { rotation: any, isWaving?: boolean }) => {
+  // Added key to prop type to fix TS error when calling Leg within a map in JSX
+  const Leg = ({ rotation, isWaving = false }: { rotation: any, isWaving?: boolean, key?: any }) => {
     return (
       <Group ref={isWaving ? wavingLegRef : null} rotation={rotation}>
         {/* Upper leg */}

@@ -51,9 +51,15 @@ export const Portfolio: React.FC<Props> = ({ isLightOn }) => {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            whileHover={{ y: -5 }}
-            className={`group rounded-3xl overflow-hidden border ${
-              isLightOn ? 'bg-white border-zinc-200' : 'bg-zinc-900 border-zinc-800'
+            whileHover={{ 
+              y: -12, 
+              scale: 1.05,
+              transition: { type: "spring", stiffness: 300, damping: 20 }
+            }}
+            className={`group rounded-3xl overflow-hidden border transition-all duration-500 will-change-transform ${
+              isLightOn 
+                ? 'bg-white border-zinc-200 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)]' 
+                : 'bg-zinc-900 border-zinc-800 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)]'
             }`}
           >
             <a href={project.link} target="_blank" rel="noopener noreferrer" className="block">
@@ -61,7 +67,7 @@ export const Portfolio: React.FC<Props> = ({ isLightOn }) => {
                 <img 
                   src={project.image} 
                   alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
                 />
                 <div className={`absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
               </div>
@@ -78,10 +84,10 @@ export const Portfolio: React.FC<Props> = ({ isLightOn }) => {
                   </a>
                 </div>
               </div>
-              <p className="opacity-60 mb-6">{project.desc}</p>
+              <p className="opacity-60 mb-6 text-sm leading-relaxed">{project.desc}</p>
               <div className="flex flex-wrap gap-2">
                 {project.tags.map(tag => (
-                  <span key={tag} className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-500 text-xs font-mono">
+                  <span key={tag} className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-500 text-[10px] font-mono uppercase tracking-wider">
                     {tag}
                   </span>
                 ))}
