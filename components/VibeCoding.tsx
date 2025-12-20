@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Sparkles, Rocket, Bell, User, Loader2, CheckCircle2, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Zap, Sparkles, Rocket, Bell, User, Loader2, CheckCircle2, ShieldCheck, AlertCircle, Info, Key } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
 
 interface Props {
@@ -13,68 +13,70 @@ export const VibeCoding: React.FC<Props> = ({ isLightOn }) => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [confirmationMessage, setConfirmationMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('Transmission failed. Use manual email.');
+
+  const handleOpenKey = async () => {
+    if (window.aistudio) {
+      await window.aistudio.openSelectKey();
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email) return;
 
     setStatus('submitting');
-    console.log('Initiating Vibe Waitlist submission...');
-
-    // Default fallback message in case AI is unavailable
-    let finalMessage = `System override successful. Welcome to the grid, ${name}. Sudeep has been notified of your entry.`;
+    
+    // Default fallback message
+    let finalMessage = `System override successful. Welcome to the grid, ${name}. Sudeep has been notified.`;
 
     try {
-      // 1. Personalized AI Greeting (Optional step, don't let it block the email)
-      const apiKey = process.env.API_KEY;
-      if (apiKey && apiKey !== "undefined") {
-        try {
-          const ai = new GoogleGenAI({ apiKey });
-          const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
-            contents: `The user named "${name}" has joined Sudeep's "Vibe Coding" waitlist. Generate a 1-sentence futuristic, cool thank you message. Mention Sudeep will reach out.`,
-          });
-          if (response.text) {
-            finalMessage = response.text;
-          }
-        } catch (aiErr) {
-          console.warn("AI Personalization skipped (likely API key issue):", aiErr);
-        }
-      } else {
-        console.log("No API Key detected. Using standard protocol message.");
+      // AI Studio Re-authentication check
+      if (window.aistudio) {
+        const hasKey = await window.aistudio.hasSelectedApiKey();
+        if (!hasKey) await window.aistudio.openSelectKey();
+      }
+
+      // 1. Personalized AI Greeting - Fresh Instance
+      try {
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const response = await ai.models.generateContent({
+          model: 'gemini-3-flash-preview',
+          contents: `The user named "${name}" has joined the waitlist for Sudeep's portfolio. Generate a 1-sentence futuristic, cool thank you.`,
+        });
+        if (response.text) finalMessage = response.text;
+      } catch (aiErr) {
+        console.warn("AI Personalization step skipped due to connection:", aiErr);
       }
 
       // 2. FormSubmit AJAX Call
-      // Added _captcha: false to prevent AJAX blocking
-      const emailResponse = await fetch("https://formsubmit.co/ajax/sudeepsr52@gmail.com", {
+      const response = await fetch("https://formsubmit.co/ajax/sudeepsr52@gmail.com", {
         method: "POST",
         headers: { 
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
+          "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify({
-            name: name,
-            email: email,
-            _subject: `🚀 New Vibe Coder: ${name}`,
-            _captcha: "false",
-            _template: "table",
-            message: `${name} (${email}) has joined the Vibe Coding waitlist.`
+          name,
+          email,
+          _subject: `New Vibe Waitlist: ${name}`,
+          _captcha: "false"
         })
       });
 
-      const data = await emailResponse.json();
+      const result = await response.json();
 
-      if (emailResponse.ok && data.success === "true") {
+      if (response.ok && (result.success === "true" || result.success === true)) {
         setConfirmationMessage(finalMessage);
         setStatus('success');
         setName('');
         setEmail('');
-        console.log("Submission successful. NOTE: If this is your first time deploying to this domain, check sudeepsr52@gmail.com for an activation email from FormSubmit!");
       } else {
-        throw new Error(data.message || "FormSubmit rejected the request.");
+        setErrorMessage(result.message || "Domain activation required. Check Sudeep's email.");
+        throw new Error("FormSubmit submission failed");
       }
     } catch (err) {
-      console.error('Vibe Submission Failure:', err);
+      console.error('Waitlist Error:', err);
       setStatus('error');
     }
   };
@@ -109,82 +111,54 @@ export const VibeCoding: React.FC<Props> = ({ isLightOn }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className={`w-full max-w-md p-8 rounded-[2rem] border ${isLightOn ? 'bg-white border-zinc-200' : 'bg-zinc-900/80 border-cyan-500/30'} backdrop-blur-md shadow-[0_0_50px_rgba(6,182,212,0.15)]`}
+                className={`w-full max-w-md p-8 rounded-[2rem] border ${isLightOn ? 'bg-white border-zinc-200 shadow-xl' : 'bg-zinc-900/80 border-cyan-500/30 shadow-[0_0_50px_rgba(6,182,212,0.1)]'} backdrop-blur-md`}
               >
-                <div className="flex justify-center mb-4">
-                  <div className="relative">
-                    <CheckCircle2 size={56} className="text-cyan-500" />
-                    <motion.div 
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1.5, opacity: 0 }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                      className="absolute inset-0 border-2 border-cyan-500 rounded-full"
-                    />
-                  </div>
-                </div>
-                <h3 className="text-2xl font-bold mb-4 italic">ACCESS GRANTED</h3>
+                <CheckCircle2 size={56} className="text-cyan-500 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold mb-4 italic uppercase tracking-tight">Access Granted</h3>
                 <p className={`text-sm leading-relaxed mb-6 ${isLightOn ? 'text-zinc-600' : 'text-zinc-400'}`}>
                   {confirmationMessage}
                 </p>
-                <div className="flex items-center justify-center gap-2 text-[10px] text-zinc-500 font-mono uppercase tracking-widest border-t border-zinc-800 pt-4">
-                  <ShieldCheck size={12} /> Secure Protocol Verified
-                </div>
+                <button onClick={() => setStatus('idle')} className="text-xs font-mono text-cyan-500 hover:underline uppercase tracking-widest">Return to Base</button>
               </motion.div>
             ) : (
-              <motion.div 
-                key="form"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="w-full max-w-md"
-              >
+              <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full max-w-md">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-cyan-500/50">
-                      <User size={18} />
-                    </div>
+                    <User className="absolute left-5 top-1/2 -translate-y-1/2 text-cyan-500/50" size={18} />
                     <input 
-                      type="text" 
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      type="text" required value={name} onChange={(e) => setName(e.target.value)}
                       placeholder="Your Full Name" 
-                      className={`w-full pl-12 pr-6 py-4 rounded-full border focus:outline-none focus:border-cyan-500 transition-colors ${
-                        isLightOn ? 'bg-white border-zinc-200 text-black' : 'bg-zinc-900/80 border-zinc-800 text-white'
-                      }`}
+                      className={`w-full pl-12 pr-6 py-4 rounded-full border transition-all ${isLightOn ? 'bg-white border-zinc-200 text-black' : 'bg-zinc-900/80 border-zinc-800 text-white focus:border-cyan-500'}`}
                     />
                   </div>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
-                      <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-cyan-500/50">
-                        <Bell size={18} />
-                      </div>
+                      <Bell className="absolute left-5 top-1/2 -translate-y-1/2 text-cyan-500/50" size={18} />
                       <input 
-                        type="email" 
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                         placeholder="vibe@engineer.com" 
-                        className={`w-full pl-12 pr-6 py-4 rounded-full border focus:outline-none focus:border-cyan-500 transition-colors ${
-                          isLightOn ? 'bg-white border-zinc-200 text-black' : 'bg-zinc-900/80 border-zinc-800 text-white'
-                        }`}
+                        className={`w-full pl-12 pr-6 py-4 rounded-full border transition-all ${isLightOn ? 'bg-white border-zinc-200 text-black' : 'bg-zinc-900/80 border-zinc-800 text-white focus:border-cyan-500'}`}
                       />
                     </div>
                     <button 
-                      type="submit"
-                      disabled={status === 'submitting'}
-                      className="p-4 bg-cyan-500 text-black rounded-full hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-50 flex items-center justify-center min-w-[56px]"
+                      type="submit" disabled={status === 'submitting'}
+                      className="p-4 bg-cyan-500 text-black rounded-full hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-50 min-w-[56px] flex items-center justify-center"
                     >
                       {status === 'submitting' ? <Loader2 size={20} className="animate-spin" /> : <Rocket size={20} />}
                     </button>
                   </div>
                   {status === 'error' && (
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="flex items-center gap-2 text-red-500 text-[10px] font-mono mt-4 uppercase justify-center"
-                    >
-                      <AlertCircle size={12} /> Transmission failed. Use manual email: sudeepsr52@gmail.com
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-3 mt-4">
+                      <div className="flex items-center gap-2 text-red-500 text-[10px] font-mono uppercase justify-center">
+                        <AlertCircle size={12} /> {errorMessage}
+                      </div>
+                      <button 
+                        type="button"
+                        onClick={handleOpenKey}
+                        className="flex items-center gap-2 mx-auto px-4 py-2 bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-400 rounded-full hover:text-cyan-500 hover:border-cyan-500 transition-all uppercase tracking-widest"
+                      >
+                        <Key size={12} /> Re-link API Key
+                      </button>
                     </motion.div>
                   )}
                 </form>
@@ -193,10 +167,8 @@ export const VibeCoding: React.FC<Props> = ({ isLightOn }) => {
           </AnimatePresence>
         </div>
 
-        <div className="mt-20 flex flex-col items-center">
-          <div className={`relative px-12 py-6 rounded-full border-2 border-cyan-500 font-black text-2xl md:text-3xl tracking-[0.2em] uppercase italic ${
-            isLightOn ? 'bg-white text-zinc-900' : 'bg-black text-cyan-500'
-          }`}>
+        <div className="mt-24">
+          <div className={`relative inline-block px-12 py-6 rounded-full border-2 border-cyan-500 font-black text-2xl md:text-3xl tracking-[0.2em] uppercase italic ${isLightOn ? 'bg-white text-zinc-900 shadow-xl' : 'bg-black text-cyan-500'}`}>
             Coming Soon
           </div>
         </div>

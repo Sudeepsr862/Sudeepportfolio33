@@ -10,7 +10,9 @@ const CylinderGeometry = 'cylinderGeometry' as any;
 const MeshStandardMaterial = 'meshStandardMaterial' as any;
 const SphereGeometry = 'sphereGeometry' as any;
 const MeshPhysicalMaterial = 'meshPhysicalMaterial' as any;
+const MeshBasicMaterial = 'meshBasicMaterial' as any;
 const PointLight = 'pointLight' as any;
+const TorusGeometry = 'torusGeometry' as any;
 
 interface Props {
   isLightOn: boolean;
@@ -49,12 +51,10 @@ export const SwingingLight: React.FC<Props> = ({ isLightOn, onToggle }) => {
       <Mesh position={[0, -2.2, 0]}>
         <CylinderGeometry args={[0.02, 0.02, 4.5]} />
         <MeshStandardMaterial 
-          // When isLightOn is false (dark mode), we use a bright white/silver color
           color={isLightOn ? "#ffd27d" : "#ffffff"} 
           roughness={0.1} 
           metalness={0.9}
           emissive={isLightOn ? "#ffaa00" : "#ffffff"}
-          // Slightly higher emissive in dark mode to make the "rope" pop as requested
           emissiveIntensity={isLightOn ? 0.8 : 0.4}
         />
       </Mesh>
@@ -65,7 +65,7 @@ export const SwingingLight: React.FC<Props> = ({ isLightOn, onToggle }) => {
         <MeshStandardMaterial color="#222" metalness={1} roughness={0.05} />
       </Mesh>
 
-      {/* High-Performance Bulb Glass */}
+      {/* --- BULB CORE --- */}
       <Mesh position={[0, -4.8, 0]}>
         <SphereGeometry args={[0.35, 32, 32]} />
         <MeshPhysicalMaterial 
@@ -83,24 +83,40 @@ export const SwingingLight: React.FC<Props> = ({ isLightOn, onToggle }) => {
         {/* Dynamic Light Sources */}
         {isLightOn && (
           <>
-            {/* Primary illumination */}
             <PointLight intensity={150} color="#ffcc33" distance={20} decay={2} castShadow />
-            {/* Warm core glow */}
             <PointLight intensity={30} color="#ffffff" distance={6} position={[0, -0.1, 0]} />
-            {/* Wider ambient bounce */}
             <PointLight intensity={5} color="#ff9900" distance={40} position={[0, 3, 0]} />
           </>
         )}
       </Mesh>
 
+      {/* --- BULB OUTLINE (The requested Rim effect) --- */}
+      <Mesh position={[0, -4.8, 0]} scale={[1.05, 1.05, 1.05]}>
+        <SphereGeometry args={[0.35, 32, 32]} />
+        <MeshBasicMaterial 
+          color={isLightOn ? "#ffcc00" : (hovered ? "#ff0000" : "#ffffff")} 
+          side={THREE.BackSide} 
+          transparent 
+          opacity={isLightOn ? 0.6 : 0.15}
+        />
+      </Mesh>
+
+      {/* Internal Filament (Adds to the lit aesthetic) */}
+      {isLightOn && (
+        <Mesh position={[0, -4.8, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <TorusGeometry args={[0.08, 0.005, 8, 24]} />
+          <MeshBasicMaterial color="#ffffff" />
+        </Mesh>
+      )}
+
       {/* Atmospheric Volumetric Halo */}
       {isLightOn && (
-        <Mesh position={[0, -4.8, 0]} scale={[1.5, 1.5, 1.5]}>
+        <Mesh position={[0, -4.8, 0]} scale={[1.6, 1.6, 1.6]}>
           <SphereGeometry args={[0.35, 32, 32]} />
           <MeshStandardMaterial 
             color="#ff8800" 
             transparent 
-            opacity={0.25} 
+            opacity={0.3} 
             blending={THREE.AdditiveBlending}
             side={THREE.BackSide}
           />
