@@ -39,6 +39,37 @@ const App: React.FC = () => {
         </Canvas>
       </div>
 
+      {/* Light Mode CTA Hint - Positioned to the right of the bulb handle */}
+      <div className="absolute top-[440px] left-1/2 ml-14 z-50 pointer-events-none hidden md:block">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ 
+            opacity: 1, 
+            x: 0,
+            transition: { delay: 2, duration: 1 }
+          }}
+          className="flex items-center gap-4"
+        >
+          <motion.div 
+            animate={{ width: [30, 60, 30] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className={`h-[1px] ${isLightOn ? 'bg-zinc-300' : 'bg-red-600/60'}`} 
+          />
+          <div className="flex flex-col">
+            <motion.span 
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className={`text-[11px] font-mono uppercase tracking-[0.5em] font-black mb-1 transition-colors duration-500 ${isLightOn ? 'text-zinc-400' : 'text-red-500'}`}
+            >
+              {isLightOn ? 'LIGHT IS ON' : 'STAY BRIGHT'}
+            </motion.span>
+            <span className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-500 ${isLightOn ? 'text-zinc-400/60' : 'text-zinc-600'}`}>
+              {isLightOn ? 'Click to dim' : 'Click the bulb'}
+            </span>
+          </div>
+        </motion.div>
+      </div>
+
       {/* Main UI Overlay */}
       <main className="relative z-10">
         <Hero isLightOn={isLightOn} onOpenGame={() => setIsGameOpen(true)} />

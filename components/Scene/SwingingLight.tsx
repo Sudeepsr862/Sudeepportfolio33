@@ -45,10 +45,18 @@ export const SwingingLight: React.FC<Props> = ({ isLightOn, onToggle }) => {
         document.body.style.cursor = 'auto';
       }}
     >
-      {/* Heavy-duty Wire */}
+      {/* Heavy-duty Visible Wire/Rope */}
       <Mesh position={[0, -2.2, 0]}>
-        <CylinderGeometry args={[0.025, 0.025, 4.5]} />
-        <MeshStandardMaterial color="#050505" roughness={0.3} metalness={0.8} />
+        <CylinderGeometry args={[0.02, 0.02, 4.5]} />
+        <MeshStandardMaterial 
+          // When isLightOn is false (dark mode), we use a bright white/silver color
+          color={isLightOn ? "#ffd27d" : "#ffffff"} 
+          roughness={0.1} 
+          metalness={0.9}
+          emissive={isLightOn ? "#ffaa00" : "#ffffff"}
+          // Slightly higher emissive in dark mode to make the "rope" pop as requested
+          emissiveIntensity={isLightOn ? 0.8 : 0.4}
+        />
       </Mesh>
 
       {/* Industrial Bulb Base */}

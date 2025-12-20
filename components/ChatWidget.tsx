@@ -25,11 +25,17 @@ export const ChatWidget: React.FC<Props> = ({ isLightOn }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatInstance = useRef<any>(null);
 
-  // Initialize Gemini Chat session
-  useEffect(() => {
-    if (isOpen && !chatInstance.current) {
-      // Fix: Strictly following initialization guidelines by using process.env.API_KEY directly
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Helper to get or create chat session
+  const getChatSession = () => {
+    if (chatInstance.current) return chatInstance.current;
+    
+    try {
+      const apiKey = process.env.API_KEY;
+      if (!apiKey) {
+        throw new Error("API key is missing. Check your environment configuration.");
+      }
+      
+      const ai = new GoogleGenAI({ apiKey });
       chatInstance.current = ai.chats.create({
         model: 'gemini-3-flash-preview',
         config: {
@@ -43,6 +49,16 @@ export const ChatWidget: React.FC<Props> = ({ isLightOn }) => {
           Rules: Keep responses VERY short and concise (max 1-2 sentences). Always prioritize brevity. If asked about contact, mention sudeepsr52@gmail.com. Do not mention being an AI unless necessary.`,
         }
       });
+      return chatInstance.current;
+    } catch (err) {
+      console.error("Chat Session Initialization Failed:", err);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      getChatSession();
     }
   }, [isOpen]);
 
@@ -64,21 +80,20 @@ export const ChatWidget: React.FC<Props> = ({ isLightOn }) => {
     setIsStreaming(true);
 
     try {
-      if (!chatInstance.current) {
-        // Fix: Strictly following initialization guidelines by using process.env.API_KEY directly
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        chatInstance.current = ai.chats.create({ model: 'gemini-3-flash-preview' });
+      const session = getChatSession();
+      if (!session) {
+        throw new Error("Could not establish vibe connection.");
       }
 
-      const stream = await chatInstance.current.sendMessageStream({ message: textToSend });
+      const stream = await session.sendMessageStream({ message: textToSend });
       
       // Add empty assistant message to populate with stream
       setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
       let fullText = '';
       for await (const chunk of stream) {
-        // Fix: Extracting text directly from chunk properties as per GenerateContentResponse guidelines
-        const chunkText = (chunk as GenerateContentResponse).text;
+        const chunkResponse = chunk as GenerateContentResponse;
+        const chunkText = chunkResponse.text;
         if (chunkText) {
           fullText += chunkText;
           setMessages(prev => {
@@ -88,9 +103,13 @@ export const ChatWidget: React.FC<Props> = ({ isLightOn }) => {
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gemini Stream Error:", error);
-      setMessages(prev => [...prev, { role: 'assistant', content: "Connection to the Vibe Grid lost. Please try again." }]);
+      const errorMessage = error.message?.includes("API key") 
+        ? "Access denied. The Vibe Grid requires a valid API key."
+        : "Connection to the Vibe Grid lost. Please try again.";
+        
+      setMessages(prev => [...prev, { role: 'assistant', content: errorMessage }]);
     } finally {
       setIsStreaming(false);
     }
@@ -99,6 +118,7 @@ export const ChatWidget: React.FC<Props> = ({ isLightOn }) => {
   const clearChat = () => {
     setMessages([{ role: 'assistant', content: "Memory cleared. How can I help you now?" }]);
     chatInstance.current = null;
+    // Session will be recreated on next interaction
   };
 
   return (

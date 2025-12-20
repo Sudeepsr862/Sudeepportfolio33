@@ -79,9 +79,9 @@ export const Hero: React.FC<Props> = ({ isLightOn, onOpenGame }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={onOpenGame}
-              className="px-8 py-4 bg-red-600 text-white font-black rounded-2xl flex items-center gap-3 shadow-[0_10px_40px_rgba(220,38,38,0.3)] hover:bg-red-500 transition-all"
+              className="px-8 py-4 bg-red-600 text-white font-black rounded-2xl flex items-center gap-3 shadow-[0_10px_40px_rgba(220,38,38,0.3)] hover:bg-red-500 transition-all uppercase tracking-wider"
             >
-              <Gamepad2 size={20} /> SWING INTO ACTION
+              <Gamepad2 size={20} /> TIME PASS
             </motion.button>
             
             <motion.a
