@@ -1,4 +1,3 @@
-
 import React, { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { User, MapPin, GraduationCap, Palette } from 'lucide-react';
@@ -24,7 +23,7 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
         viewport={{ once: true }}
         className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center"
       >
-        <div className="order-2 md:order-1">
+        <div>
           <h2 className={`text-4xl md:text-5xl font-bold mb-8 ${isLightOn ? 'text-zinc-900' : 'text-white'}`}>
             The Story <span className="text-red-500 italic">Behind the Code</span>
           </h2>
@@ -56,36 +55,31 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
           </div>
         </div>
 
-        <div className="relative h-[750px] w-full group order-1 md:order-2">
-          {/* The Hero Hub Frame */}
-          <div className={`h-full w-full rounded-[4.5rem] overflow-hidden border border-red-600/20 shadow-[0_50px_100px_-20px_rgba(220,38,38,0.15)] transition-all duration-700 hover:border-red-600/40 ${isLightOn ? 'bg-zinc-100' : 'bg-[#080808]'}`}>
-            <Suspense fallback={<div className="flex items-center justify-center h-full font-mono text-red-500 animate-pulse uppercase tracking-[0.2em] italic">Materializing Spider-Man...</div>}>
+        <div className="relative h-[700px] w-full group">
+          <div className={`h-full w-full rounded-[3.5rem] overflow-hidden border-2 border-red-600/20 shadow-2xl transition-colors duration-700 ${isLightOn ? 'bg-zinc-100' : 'bg-zinc-950'}`}>
+            <Suspense fallback={<div className="flex items-center justify-center h-full font-mono text-red-500 animate-pulse uppercase tracking-[0.2em]">Materializing Hero...</div>}>
               <Canvas shadows dpr={[1, 2]} gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}>
-                {/* PERFECT CENTERING CAMERA */}
-                <PerspectiveCamera makeDefault position={[0, 0, 7.5]} fov={28} />
-                <AmbientLight intensity={0.6} />
+                <PerspectiveCamera makeDefault position={[0, 0, 7]} fov={32} />
+                <AmbientLight intensity={0.5} />
                 
-                {/* CINEMATIC LIGHTING SUITE */}
-                <SpotLight position={[10, 15, 10]} angle={0.25} penumbra={1} intensity={3.5} color="#ffffff" castShadow />
-                <PointLight position={[-10, 5, 5]} color="#4488ff" intensity={2.5} />
-                <PointLight position={[10, -5, 5]} color="#ff4444" intensity={2} />
-                <PointLight position={[0, 0, 5]} color="#ffffff" intensity={0.5} />
+                {/* Cinematic Key and Fill Lights */}
+                <SpotLight position={[10, 10, 10]} angle={0.2} penumbra={1} intensity={2.5} color="#ffffff" castShadow />
+                <PointLight position={[-10, 5, 5]} color="#4488ff" intensity={1.5} />
+                <PointLight position={[10, -5, 5]} color="#ff4444" intensity={1} />
                 
                 <Environment preset="city" />
                 
-                {/* CENTERED CHARACTER WITH SMOOTH FLOAT */}
-                <Float speed={2.5} rotationIntensity={0.2} floatIntensity={0.6}>
-                  <group position={[0, 0, 0]}> 
+                <Float speed={1.8} rotationIntensity={0.25} floatIntensity={0.4}>
+                  <group position={[0, 0, 0]}> {/* Spidey is centered internally in SpiderManCharacter.tsx */}
                     <SpiderManCharacter />
                   </group>
                 </Float>
 
-                {/* REALISTIC CONTACT SHADOWS */}
                 <ContactShadows 
-                  position={[0, -2.4, 0]} 
-                  opacity={0.65} 
-                  scale={14} 
-                  blur={3} 
+                  position={[0, -2.2, 0]} 
+                  opacity={0.5} 
+                  scale={10} 
+                  blur={2.8} 
                   far={4} 
                   color={isLightOn ? "#000000" : "#ff0000"} 
                 />
@@ -93,30 +87,21 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
                 <OrbitControls 
                   enableZoom={false} 
                   minPolarAngle={Math.PI / 3} 
-                  maxPolarAngle={Math.PI / 1.65}
+                  maxPolarAngle={Math.PI / 1.7}
                   enableDamping={true}
-                  dampingFactor={0.07}
+                  dampingFactor={0.06}
                 />
               </Canvas>
             </Suspense>
           </div>
           
-          {/* INTERACTIVE INDICATOR */}
           <motion.div 
-            animate={{ y: [0, -8, 0], scale: [1, 1.02, 1] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-8 -right-8 px-12 py-6 bg-red-600 text-white text-[11px] font-black rounded-[2rem] shadow-[0_25px_60px_rgba(220,38,38,0.4)] pointer-events-none group-hover:bg-red-500 group-hover:scale-110 transition-all uppercase tracking-[0.3em] italic border-2 border-white/20 flex items-center gap-3"
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-6 -right-6 px-10 py-5 bg-red-600 text-white text-[11px] font-black rounded-3xl shadow-[0_25px_60px_rgba(220,38,38,0.4)] pointer-events-none group-hover:scale-110 transition-transform uppercase tracking-[0.25em] italic"
           >
-            TOUCH TO WAVE 👋 🕸️
+            HOVER TO WAVE 👋 🕸️
           </motion.div>
-
-          {/* WEB ACCENT */}
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity">
-            <svg viewBox="0 0 100 100" className="w-full h-full stroke-red-600 fill-none" strokeWidth="0.5">
-              <circle cx="0" cy="100" r="20" /><circle cx="0" cy="100" r="40" /><circle cx="0" cy="100" r="60" /><circle cx="0" cy="100" r="80" />
-              <path d="M0,100 L100,0 M0,100 L100,50 M0,100 L50,0" />
-            </svg>
-          </div>
         </div>
       </motion.div>
     </section>
