@@ -15,8 +15,9 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
     setStatus('submitting');
 
     try {
-      // Standard Formspree submission for reliable email delivery
-      const response = await fetch('https://formspree.io/f/mvgzpbdp', {
+      // Using FormSubmit.co for direct delivery to your email
+      // We use the AJAX endpoint so the page doesn't redirect
+      const response = await fetch('https://formsubmit.co/ajax/sudeepsr52@gmail.com', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,8 +26,8 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          _subject: `New Interest from ${formData.name}`,
-          message: `User ${formData.name} is interested in your next-gen projects. Contact them at: ${formData.email}`
+          _subject: `New Interest: ${formData.name}`,
+          message: `${formData.name} is interested in your upcoming next-gen AI and interactive website projects.`
         }),
       });
 
@@ -62,7 +63,7 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
           <p className={`text-lg max-w-2xl mx-auto mb-10 opacity-70 leading-relaxed ${isLightOn ? 'text-zinc-700' : 'text-zinc-300'}`}>
             I'm currently building the next generation of <span className="text-red-600 font-bold">AI-driven experiences</span>, 
             immersive <span className="text-red-600 font-bold">interactive websites</span>, and more. <br/>
-            <span className="italic mt-4 block">If you have interest in these projects, you can submit your details below for early access.</span>
+            <span className="italic mt-4 block text-sm sm:text-base">If you have interest in these projects, you can submit your details below for early access.</span>
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mb-16 opacity-50">
@@ -81,25 +82,25 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
             {status === 'success' ? (
               <motion.div
                 key="success"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className={`p-12 rounded-3xl border ${isLightOn ? 'bg-white border-zinc-200 shadow-sm' : 'bg-zinc-900 border-zinc-800'} flex flex-col items-center gap-6`}
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className={`p-12 rounded-[2.5rem] border ${isLightOn ? 'bg-white border-zinc-200 shadow-xl' : 'bg-zinc-900 border-zinc-800 shadow-2xl shadow-red-950/20'} flex flex-col items-center gap-6`}
               >
-                <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
-                  <CheckCircle2 size={32} />
+                <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
+                  <CheckCircle2 size={40} />
                 </div>
-                <div className="space-y-2">
-                  <h3 className={`text-2xl font-bold ${isLightOn ? 'text-zinc-900' : 'text-white'}`}>REGISTRATION COMPLETE</h3>
-                  <p className="text-zinc-500 font-medium max-w-sm mx-auto">
+                <div className="space-y-4">
+                  <h3 className={`text-2xl font-black italic tracking-tight ${isLightOn ? 'text-zinc-900' : 'text-white'}`}>REGISTRATION COMPLETE</h3>
+                  <p className={`text-lg font-medium max-w-sm mx-auto leading-relaxed ${isLightOn ? 'text-zinc-600' : 'text-zinc-300'}`}>
                     Thanks for your interest! I will contact you soon through email.
                   </p>
                 </div>
                 <button 
                   onClick={() => setStatus('idle')}
-                  className={`px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-colors ${isLightOn ? 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200' : 'bg-zinc-800 text-white hover:bg-zinc-700'}`}
+                  className={`px-10 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${isLightOn ? 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200' : 'bg-zinc-800 text-white hover:bg-zinc-700'} shadow-lg`}
                 >
-                  Register Another
+                  Send Another Interest
                 </button>
               </motion.div>
             ) : status === 'error' ? (
@@ -107,25 +108,25 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
                   key="error"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className={`p-12 rounded-3xl border border-red-500/20 ${isLightOn ? 'bg-red-50' : 'bg-red-950/10'} flex flex-col items-center gap-6`}
+                  className={`p-12 rounded-[2.5rem] border border-red-500/20 ${isLightOn ? 'bg-red-50' : 'bg-red-950/10'} flex flex-col items-center gap-6 shadow-2xl`}
                 >
-                  <AlertCircle size={40} className="text-red-500" />
+                  <AlertCircle size={48} className="text-red-500" />
                   <div>
-                    <h3 className={`text-xl font-bold uppercase mb-2 ${isLightOn ? 'text-red-900' : 'text-red-100'}`}>Connection Failed</h3>
-                    <p className={`opacity-70 text-sm max-w-xs mx-auto ${isLightOn ? 'text-red-800' : 'text-red-200'}`}>
-                      There was an issue sending your data. You can try again or email me directly at <span className="font-bold underline">sudeepsr52@gmail.com</span>.
+                    <h3 className={`text-2xl font-black italic tracking-tight uppercase mb-2 ${isLightOn ? 'text-red-900' : 'text-red-100'}`}>Connection Failed</h3>
+                    <p className={`opacity-70 text-base max-w-xs mx-auto leading-relaxed ${isLightOn ? 'text-red-800' : 'text-red-200'}`}>
+                      The signal dropped! Please try again or reach out directly at <span className="font-bold underline decoration-red-500 decoration-2">sudeepsr52@gmail.com</span>.
                     </p>
                   </div>
                   <div className="flex gap-4">
                     <button 
                       onClick={() => setStatus('idle')}
-                      className={`px-6 py-3 rounded-xl font-bold text-xs uppercase ${isLightOn ? 'bg-white text-zinc-900 border border-zinc-200' : 'bg-zinc-800 text-white'}`}
+                      className={`px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-widest transition-all ${isLightOn ? 'bg-white text-zinc-900 border border-zinc-200 shadow-sm' : 'bg-zinc-800 text-white shadow-xl'}`}
                     >
                       Retry
                     </button>
                     <a 
                       href={`mailto:sudeepsr52@gmail.com?subject=Interest in Next-Gen Projects&body=Name: ${formData.name}%0D%0AEmail: ${formData.email}`}
-                      className="px-6 py-3 bg-red-600 text-white rounded-xl font-bold text-xs uppercase"
+                      className="px-8 py-4 bg-red-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-red-600/30 hover:bg-red-500 transition-all"
                     >
                       Email Direct
                     </a>
@@ -138,77 +139,91 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onSubmit={handleSubmit}
-                className={`p-8 md:p-12 rounded-3xl border text-left transition-all ${
+                className={`p-8 md:p-12 rounded-[2.5rem] border text-left transition-all relative overflow-hidden ${
                   isLightOn 
-                  ? 'bg-white border-zinc-200' 
-                  : 'bg-zinc-900 border-zinc-800 shadow-sm'
+                  ? 'bg-white border-zinc-200 shadow-2xl' 
+                  : 'bg-zinc-900 border-zinc-800 shadow-2xl'
                 }`}
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-mono uppercase tracking-widest opacity-40 ml-1">Your Name</label>
-                    <input 
-                      required
-                      type="text"
-                      name="name"
-                      placeholder="Peter Parker"
-                      value={formData.name}
-                      onChange={e => setFormData({ ...formData, name: e.target.value })}
-                      className={`w-full px-5 py-4 rounded-xl border transition-all outline-none text-sm ${
-                        isLightOn 
-                        ? 'bg-zinc-50 border-zinc-200 focus:border-red-500 text-zinc-900' 
-                        : 'bg-zinc-950 border-zinc-800 focus:border-red-600 text-white placeholder:opacity-20'
-                      }`}
-                    />
+                {/* Decorative background web */}
+                <div className="absolute top-0 right-0 w-32 h-32 opacity-[0.03] pointer-events-none">
+                  <svg viewBox="0 0 100 100" className="w-full h-full stroke-red-600 fill-none" strokeWidth="1">
+                    <circle cx="100" cy="0" r="20" /><circle cx="100" cy="0" r="40" /><circle cx="100" cy="0" r="60" /><circle cx="100" cy="0" r="80" />
+                    <path d="M100,0 L0,100 M100,0 L50,100 M100,0 L0,50" />
+                  </svg>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-mono uppercase tracking-[0.2em] opacity-40 ml-1">Your Identity</label>
+                    <div className="relative">
+                      <User size={16} className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isLightOn ? 'text-zinc-300' : 'text-zinc-700'}`} />
+                      <input 
+                        required
+                        type="text"
+                        name="name"
+                        placeholder="Peter Parker"
+                        value={formData.name}
+                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                        className={`w-full pl-12 pr-6 py-4 rounded-2xl border transition-all outline-none text-sm font-medium ${
+                          isLightOn 
+                          ? 'bg-zinc-50 border-zinc-200 focus:border-red-500 text-zinc-900' 
+                          : 'bg-zinc-950 border-zinc-800 focus:border-red-600 text-white placeholder:opacity-20'
+                        }`}
+                      />
+                    </div>
                   </div>
                   
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-mono uppercase tracking-widest opacity-40 ml-1">Your Email</label>
-                    <input 
-                      required
-                      type="email"
-                      name="email"
-                      placeholder="spidey@vibe.com"
-                      value={formData.email}
-                      onChange={e => setFormData({ ...formData, email: e.target.value })}
-                      className={`w-full px-5 py-4 rounded-xl border transition-all outline-none text-sm ${
-                        isLightOn 
-                        ? 'bg-zinc-50 border-zinc-200 focus:border-red-500 text-zinc-900' 
-                        : 'bg-zinc-950 border-zinc-800 focus:border-red-600 text-white placeholder:opacity-20'
-                      }`}
-                    />
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-mono uppercase tracking-[0.2em] opacity-40 ml-1">Communication Channel</label>
+                    <div className="relative">
+                      <Mail size={16} className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isLightOn ? 'text-zinc-300' : 'text-zinc-700'}`} />
+                      <input 
+                        required
+                        type="email"
+                        name="email"
+                        placeholder="spidey@vibe.com"
+                        value={formData.email}
+                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                        className={`w-full pl-12 pr-6 py-4 rounded-2xl border transition-all outline-none text-sm font-medium ${
+                          isLightOn 
+                          ? 'bg-zinc-50 border-zinc-200 focus:border-red-500 text-zinc-900' 
+                          : 'bg-zinc-950 border-zinc-800 focus:border-red-600 text-white placeholder:opacity-20'
+                        }`}
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="flex flex-col md:flex-row items-center gap-8">
                   <button
                     type="submit"
                     disabled={status === 'submitting'}
-                    className="flex-1 w-full py-5 bg-red-600 text-white rounded-xl font-bold text-sm tracking-widest hover:bg-red-700 transition-all flex items-center justify-center gap-3 disabled:opacity-50 uppercase"
+                    className="flex-1 w-full py-5 bg-red-600 text-white rounded-2xl font-black text-sm tracking-[0.1em] hover:bg-red-500 transition-all flex items-center justify-center gap-4 disabled:opacity-50 uppercase shadow-xl shadow-red-600/20 active:scale-[0.98]"
                   >
                     {status === 'submitting' ? (
                       <>
-                        <Loader2 size={18} className="animate-spin" />
-                        Sending...
+                        <Loader2 size={20} className="animate-spin" />
+                        SYNCHRONIZING...
                       </>
                     ) : (
                       <>
                         SUBMIT INTEREST 🕸️
-                        <ArrowRight size={18} />
+                        <ArrowRight size={20} />
                       </>
                     )}
                   </button>
                   
-                  <div className="flex items-center gap-3 px-6 py-4 rounded-xl border border-zinc-800/10 bg-zinc-800/5 opacity-40">
-                    <ShieldCheck size={18} className="text-zinc-500" />
-                    <span className="text-[9px] font-mono uppercase tracking-widest leading-none">
-                      Secure<br/>Submission
+                  <div className="flex items-center gap-4 px-8 py-4 rounded-2xl border border-zinc-800/10 bg-zinc-800/5 opacity-40">
+                    <ShieldCheck size={20} className="text-zinc-500" />
+                    <span className="text-[10px] font-mono uppercase tracking-[0.1em] leading-tight">
+                      Encrypted<br/>Submission
                     </span>
                   </div>
                 </div>
                 
-                <p className="mt-8 text-center text-[9px] font-mono opacity-20 uppercase tracking-[0.3em]">
-                  Data routed directly to sudeepsr52@gmail.com
+                <p className="mt-10 text-center text-[10px] font-mono opacity-20 uppercase tracking-[0.4em]">
+                  Routed to: sudeepsr52@gmail.com
                 </p>
               </motion.form>
             )}
