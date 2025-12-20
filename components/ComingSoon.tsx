@@ -15,6 +15,7 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
     setStatus('submitting');
 
     try {
+      // Standard Formspree submission for reliable email delivery
       const response = await fetch('https://formspree.io/f/mvgzpbdp', {
         method: 'POST',
         headers: {
@@ -24,8 +25,8 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          _subject: `🚀 INTEREST: ${formData.name}`,
-          message: `User ${formData.name} (${formData.email}) expressed interest in next-gen projects.`
+          _subject: `New Interest from ${formData.name}`,
+          message: `User ${formData.name} is interested in your next-gen projects. Contact them at: ${formData.email}`
         }),
       });
 
@@ -33,7 +34,7 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
         setStatus('success');
         setFormData({ name: '', email: '' });
       } else {
-        throw new Error('Signal Blocked');
+        throw new Error('Submission Failed');
       }
     } catch (err) {
       console.error("Submission Error:", err);
@@ -90,8 +91,8 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
                 </div>
                 <div className="space-y-2">
                   <h3 className={`text-2xl font-bold ${isLightOn ? 'text-zinc-900' : 'text-white'}`}>REGISTRATION COMPLETE</h3>
-                  <p className="text-zinc-500 font-medium">
-                    Thank you for your interest! I will send an email to you.
+                  <p className="text-zinc-500 font-medium max-w-sm mx-auto">
+                    Thanks for your interest! I will contact you soon through email.
                   </p>
                 </div>
                 <button 
@@ -112,7 +113,7 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
                   <div>
                     <h3 className={`text-xl font-bold uppercase mb-2 ${isLightOn ? 'text-red-900' : 'text-red-100'}`}>Connection Failed</h3>
                     <p className={`opacity-70 text-sm max-w-xs mx-auto ${isLightOn ? 'text-red-800' : 'text-red-200'}`}>
-                      There was an issue sending your data. You can try again or email me directly.
+                      There was an issue sending your data. You can try again or email me directly at <span className="font-bold underline">sudeepsr52@gmail.com</span>.
                     </p>
                   </div>
                   <div className="flex gap-4">
@@ -123,7 +124,7 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
                       Retry
                     </button>
                     <a 
-                      href={`mailto:sudeepsr52@gmail.com?subject=Waitlist Signup&body=Name: ${formData.name}%0D%0AEmail: ${formData.email}`}
+                      href={`mailto:sudeepsr52@gmail.com?subject=Interest in Next-Gen Projects&body=Name: ${formData.name}%0D%0AEmail: ${formData.email}`}
                       className="px-6 py-3 bg-red-600 text-white rounded-xl font-bold text-xs uppercase"
                     >
                       Email Direct
@@ -188,11 +189,11 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
                     {status === 'submitting' ? (
                       <>
                         <Loader2 size={18} className="animate-spin" />
-                        Processing...
+                        Sending...
                       </>
                     ) : (
                       <>
-                        SECURE MY ACCESS 🕸️
+                        SUBMIT INTEREST 🕸️
                         <ArrowRight size={18} />
                       </>
                     )}
@@ -201,13 +202,13 @@ export const ComingSoon: React.FC<Props> = ({ isLightOn }) => {
                   <div className="flex items-center gap-3 px-6 py-4 rounded-xl border border-zinc-800/10 bg-zinc-800/5 opacity-40">
                     <ShieldCheck size={18} className="text-zinc-500" />
                     <span className="text-[9px] font-mono uppercase tracking-widest leading-none">
-                      Secure<br/>Transmission
+                      Secure<br/>Submission
                     </span>
                   </div>
                 </div>
                 
                 <p className="mt-8 text-center text-[9px] font-mono opacity-20 uppercase tracking-[0.3em]">
-                  Direct sync to sudeepsr52@gmail.com
+                  Data routed directly to sudeepsr52@gmail.com
                 </p>
               </motion.form>
             )}
