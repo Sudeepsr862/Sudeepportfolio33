@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, User, Loader2, CheckCircle2, Zap, Gamepad2 } from 'lucide-react';
+import { ArrowRight, User, Gamepad2 } from 'lucide-react';
 
 interface Props {
   isLightOn: boolean;
@@ -11,10 +11,6 @@ export const Hero: React.FC<Props> = ({ isLightOn, onOpenGame }) => {
   const [text, setText] = useState('');
   const fullText = "Building the future with code.";
   const [index, setIndex] = useState(0);
-  
-  // Loading Button State
-  const [loadingStatus, setLoadingStatus] = useState<'idle' | 'loading' | 'success'>('idle');
-  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     if (index < fullText.length) {
@@ -25,33 +21,6 @@ export const Hero: React.FC<Props> = ({ isLightOn, onOpenGame }) => {
       return () => clearTimeout(timeout);
     }
   }, [index, fullText]);
-
-  const handleSyncClick = () => {
-    if (loadingStatus !== 'idle') return;
-    
-    setLoadingStatus('loading');
-    setProgress(0);
-    
-    const duration = 2500;
-    const intervalTime = 50;
-    const steps = duration / intervalTime;
-    let currentStep = 0;
-
-    const interval = setInterval(() => {
-      currentStep++;
-      const nextProgress = Math.min(Math.round((currentStep / steps) * 100), 100);
-      setProgress(nextProgress);
-
-      if (nextProgress === 100) {
-        clearInterval(interval);
-        setLoadingStatus('success');
-        setTimeout(() => {
-          setLoadingStatus('idle');
-          setProgress(0);
-        }, 2000);
-      }
-    }, intervalTime);
-  };
 
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-20 px-6 overflow-hidden">
@@ -84,70 +53,6 @@ export const Hero: React.FC<Props> = ({ isLightOn, onOpenGame }) => {
             >
               VIEW WORKS <ArrowRight size={18} />
             </motion.a>
-            
-            <motion.button
-              onClick={handleSyncClick}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className={`relative min-w-[180px] h-[54px] px-6 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all duration-500 border overflow-hidden ${
-                loadingStatus === 'success' 
-                ? 'bg-green-600 border-green-500 text-white shadow-[0_0_30px_rgba(34,197,94,0.4)]' 
-                : (isLightOn 
-                    ? 'bg-zinc-100 border-zinc-200 text-zinc-900 shadow-zinc-200/50' 
-                    : 'bg-white/5 border-white/10 text-white backdrop-blur-xl hover:bg-white/10')
-              }`}
-            >
-              <AnimatePresence mode="wait">
-                {loadingStatus === 'idle' && (
-                  <motion.div 
-                    key="idle"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="flex items-center gap-2"
-                  >
-                    <Zap size={16} className="text-red-500" />
-                    <span className="font-mono text-[10px] tracking-[0.2em] uppercase">Synchronize</span>
-                  </motion.div>
-                )}
-
-                {loadingStatus === 'loading' && (
-                  <motion.div 
-                    key="loading"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex items-center gap-2"
-                  >
-                    <div className="relative flex items-center justify-center">
-                      <Loader2 size={16} className="animate-spin text-red-500" />
-                    </div>
-                    <span className="font-mono text-[10px] tracking-[0.2em] uppercase">Syncing...</span>
-                  </motion.div>
-                )}
-
-                {loadingStatus === 'success' && (
-                  <motion.div 
-                    key="success"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex items-center gap-2"
-                  >
-                    <CheckCircle2 size={16} />
-                    <span className="font-mono text-[10px] tracking-[0.2em] uppercase">Done</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {loadingStatus === 'loading' && (
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                  className="absolute bottom-0 left-0 h-1 bg-red-600 shadow-[0_0_10px_#dc2626]"
-                />
-              )}
-            </motion.button>
 
             {/* SPIDER-VERSE GAME BUTTON */}
             <motion.button

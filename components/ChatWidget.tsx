@@ -11,7 +11,7 @@ const SUGGESTED_PROMPTS = [
   "What's your current vibe?",
   "Tell me about 'Vibe Coding'.",
   "How's the AIML journey going?",
-  "Who is your MJ?"
+  "What's your tech stack?"
 ];
 
 export const ChatWidget: React.FC<Props> = ({ isLightOn }) => {
