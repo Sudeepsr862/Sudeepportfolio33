@@ -7,232 +7,161 @@ export const SpiderManCharacter: React.FC = () => {
   const groupRef = useRef<THREE.Group>(null);
   const headRef = useRef<THREE.Group>(null);
   const wavingArmRef = useRef<THREE.Group>(null);
-  const chestRef = useRef<THREE.Group>(null);
   const leftEyeRef = useRef<THREE.Group>(null);
   const rightEyeRef = useRef<THREE.Group>(null);
-  
-  const [hovered, setHovered] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
 
   // Natural Blinking Logic
   useEffect(() => {
     const blinkCycle = () => {
-      const delay = Math.random() * 4000 + 2000;
+      const delay = Math.random() * 3000 + 2000;
       setTimeout(() => {
         setIsBlinking(true);
         setTimeout(() => {
           setIsBlinking(false);
           blinkCycle();
-        }, 120);
+        }, 150);
       }, delay);
     };
     blinkCycle();
   }, []);
 
-  // --- CINEMATIC SUIT MATERIALS ---
+  // Professional Chibi Materials
   const suitRed = useMemo(() => new THREE.MeshPhysicalMaterial({
-    color: "#a00000",
-    metalness: 0.2,
-    roughness: 0.5,
-    clearcoat: 0.3,
-    clearcoatRoughness: 0.4,
+    color: "#e60000",
+    roughness: 0.3,
+    metalness: 0.1,
+    clearcoat: 0.8,
     sheen: 1,
-    sheenColor: "#ff3333",
-    // We simulate the texture with a high-detail physical material
+    sheenColor: "#ff4444"
   }), []);
 
   const suitBlue = useMemo(() => new THREE.MeshPhysicalMaterial({
-    color: "#050a1a",
-    metalness: 0.4,
-    roughness: 0.3,
-    sheen: 0.5,
-    sheenColor: "#0044ff",
+    color: "#0044cc",
+    roughness: 0.4,
+    metalness: 0.1,
   }), []);
 
   const lensWhite = useMemo(() => new THREE.MeshStandardMaterial({
     color: "#ffffff",
     emissive: "#ffffff",
-    emissiveIntensity: 1.5,
-    roughness: 0,
+    emissiveIntensity: 1.2,
   }), []);
 
   const blackTech = useMemo(() => new THREE.MeshStandardMaterial({
-    color: "#080808",
+    color: "#111111",
     roughness: 0.1,
-    metalness: 0.8,
-  }), []);
-
-  const goldTrim = useMemo(() => new THREE.MeshStandardMaterial({
-    color: "#d4af37",
-    metalness: 1,
-    roughness: 0.2,
   }), []);
 
   useFrame((state) => {
     if (!groupRef.current) return;
     const t = state.clock.getElapsedTime();
 
-    // 1. Center Floating & Breathing
-    const breath = Math.sin(t * 1.2);
-    groupRef.current.position.y = breath * 0.03 - 0.5; // Centered vertically
+    // Small floating idle motion
+    groupRef.current.position.y = Math.sin(t * 1.5) * 0.05 - 0.2;
     
-    if (chestRef.current) {
-      chestRef.current.scale.set(1 + breath * 0.01, 1 + breath * 0.01, 1 + breath * 0.01);
-    }
-
-    // 2. Head Tracking
+    // Head looks at cursor
     if (headRef.current) {
-      const targetRY = state.mouse.x * 0.6;
-      const targetRX = -state.mouse.y * 0.3;
-      headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, targetRY, 0.1);
-      headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, targetRX, 0.1);
+      headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, state.mouse.x * 0.4, 0.1);
+      headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, -state.mouse.y * 0.2, 0.1);
     }
 
-    // 3. Hover-Triggered "Hello" Animation
+    // "Hello" Waving Animation
     if (wavingArmRef.current) {
-      if (hovered) {
-        // High waving motion
-        const wave = Math.sin(t * 8) * 0.4;
-        wavingArmRef.current.rotation.z = THREE.MathUtils.lerp(wavingArmRef.current.rotation.z, -1.8 + wave, 0.1);
-        wavingArmRef.current.rotation.x = THREE.MathUtils.lerp(wavingArmRef.current.rotation.x, -0.8, 0.1);
-      } else {
-        // Relaxed natural stance
-        wavingArmRef.current.rotation.z = THREE.MathUtils.lerp(wavingArmRef.current.rotation.z, -0.3, 0.05);
-        wavingArmRef.current.rotation.x = THREE.MathUtils.lerp(wavingArmRef.current.rotation.x, 0.1, 0.05);
-      }
+      // Rotate arm up and wave back and forth
+      wavingArmRef.current.rotation.z = -1.5 + Math.sin(t * 5) * 0.5;
+      wavingArmRef.current.rotation.x = -0.5 + Math.sin(t * 2) * 0.2;
     }
 
-    // 4. Shutter Lens Animation (Realistic mechanical eyes)
-    const targetEyeScaleY = isBlinking ? 0.05 : (hovered ? 0.6 : 1);
+    // Blinking eye scale
+    const targetEyeScale = isBlinking ? 0.05 : 1;
     if (leftEyeRef.current && rightEyeRef.current) {
-      leftEyeRef.current.scale.y = THREE.MathUtils.lerp(leftEyeRef.current.scale.y, targetEyeScaleY, 0.25);
-      rightEyeRef.current.scale.y = THREE.MathUtils.lerp(rightEyeRef.current.scale.y, targetEyeScaleY, 0.25);
+      leftEyeRef.current.scale.y = THREE.MathUtils.lerp(leftEyeRef.current.scale.y, targetEyeScale, 0.3);
+      rightEyeRef.current.scale.y = THREE.MathUtils.lerp(rightEyeRef.current.scale.y, targetEyeScale, 0.3);
     }
   });
 
   return (
-    <group 
-      ref={groupRef} 
-      scale={[0.85, 0.85, 0.85]}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
-    >
-      {/* --- REALISTIC ANATOMY HEAD --- */}
-      <group ref={headRef} position={[0, 2.8, 0]}>
+    <group ref={groupRef} scale={[1.3, 1.3, 1.3]}>
+      {/* --- BIG CUTE HEAD --- */}
+      <group ref={headRef} position={[0, 1.4, 0]}>
         <mesh castShadow material={suitRed}>
-          <sphereGeometry args={[0.26, 32, 32]} scale={[1, 1.15, 1.05]} />
+          <sphereGeometry args={[0.55, 32, 32]} />
         </mesh>
         
-        {/* Cinematic Mechanical Lenses */}
-        <group position={[0, 0.05, 0.2]}>
+        {/* Lenses */}
+        <group position={[0, 0, 0.45]}>
           {[1, -1].map(side => (
-            <group key={side} ref={side === 1 ? rightEyeRef : leftEyeRef} position={[side * 0.12, 0.02, 0]} rotation={[0.1, side * -0.25, 0]}>
+            <group key={side} ref={side === 1 ? rightEyeRef : leftEyeRef} position={[side * 0.22, 0.05, 0]}>
               <mesh material={blackTech}>
-                <sphereGeometry args={[0.16, 16, 16]} scale={[1.1, 1.2, 0.1]} />
+                <sphereGeometry args={[0.18, 16, 16]} scale={[1.1, 1.2, 0.2]} />
               </mesh>
-              <mesh position={[0, 0, 0.01]} material={lensWhite}>
-                <sphereGeometry args={[0.14, 16, 16]} scale={[1, 1.1, 0.05]} />
+              <mesh position={[0, 0, 0.02]} material={lensWhite}>
+                <sphereGeometry args={[0.15, 16, 16]} scale={[1, 1.1, 0.1]} />
               </mesh>
             </group>
           ))}
         </group>
-        
+
         {/* Neck */}
-        <mesh position={[0, -0.35, 0]} material={suitRed}>
-          <cylinderGeometry args={[0.12, 0.16, 0.3]} />
+        <mesh position={[0, -0.4, 0]} material={suitRed}>
+          <cylinderGeometry args={[0.15, 0.15, 0.2]} />
         </mesh>
       </group>
 
-      {/* --- HEROIC TORSO --- */}
-      <group ref={chestRef} position={[0, 1.8, 0]}>
-        {/* Chest Plate */}
+      {/* --- COMPACT BODY --- */}
+      <group position={[0, 0.6, 0]}>
+        {/* Torso */}
         <mesh castShadow material={suitRed}>
-          <sphereGeometry args={[0.45, 32, 32]} scale={[1.1, 1.3, 0.7]} />
+          <sphereGeometry args={[0.35, 32, 32]} scale={[1.1, 1.2, 0.8]} />
         </mesh>
         
-        {/* Blue Side Panels */}
-        <group scale={[1.15, 1.1, 1.05]}>
-          <mesh position={[0.35, -0.2, -0.1]} material={suitBlue}>
-            <sphereGeometry args={[0.3, 16, 16]} scale={[0.5, 1.2, 0.5]} />
-          </mesh>
-          <mesh position={[-0.35, -0.2, -0.1]} material={suitBlue}>
-            <sphereGeometry args={[0.3, 16, 16]} scale={[0.5, 1.2, 0.5]} />
-          </mesh>
-        </group>
-
-        {/* Integrated Gold Spider Logo */}
-        <mesh position={[0, 0.1, 0.35]} material={goldTrim} rotation={[0.2, 0, 0]}>
-          <boxGeometry args={[0.08, 0.12, 0.03]} />
+        {/* Blue Details */}
+        <mesh position={[0, -0.2, 0.05]} material={suitBlue}>
+          <sphereGeometry args={[0.3, 16, 16]} scale={[0.95, 0.5, 0.85]} />
         </mesh>
-        {/* Spider Legs Trim */}
-        {[1, -1].map(side => (
-          <group key={side} position={[side * 0.2, 0.15, 0.3]} rotation={[0, 0, side * 0.5]}>
-            <mesh material={goldTrim}>
-              <boxGeometry args={[0.3, 0.01, 0.01]} />
-            </mesh>
-          </group>
-        ))}
+
+        {/* Small Logo */}
+        <mesh position={[0, 0.1, 0.3]} material={blackTech}>
+          <boxGeometry args={[0.1, 0.15, 0.02]} />
+        </mesh>
       </group>
 
       {/* --- ARMS --- */}
-      {/* Left Arm (Relaxed) */}
-      <group position={[-0.55, 2.3, 0]} rotation={[0, 0, 0.3]}>
-        <mesh material={suitRed} castShadow>
-          <capsuleGeometry args={[0.08, 0.5, 4, 12]} />
+      {/* Static Arm (Left) */}
+      <group position={[-0.38, 0.85, 0]} rotation={[0, 0, 0.4]}>
+        <mesh material={suitRed}>
+          <capsuleGeometry args={[0.1, 0.25, 4, 8]} />
         </mesh>
-        <group position={[-0.1, -0.6, 0]} rotation={[0, 0, 0.2]}>
+      </group>
+
+      {/* Waving Arm (Right) - "Saying Hello" */}
+      <group ref={wavingArmRef} position={[0.38, 0.85, 0]}>
+        <group position={[0.15, 0.25, 0]} rotation={[0, 0, -1.2]}>
           <mesh material={suitRed}>
-            <capsuleGeometry args={[0.07, 0.5, 4, 12]} />
+            <capsuleGeometry args={[0.1, 0.3, 4, 8]} />
           </mesh>
-          {/* Hand */}
-          <mesh position={[0, -0.35, 0]} material={suitRed}>
-            <sphereGeometry args={[0.09, 16, 16]} scale={[1, 1.2, 0.8]} />
+          <mesh position={[0, 0.2, 0]} material={suitRed}>
+            <sphereGeometry args={[0.12, 12, 12]} />
           </mesh>
         </group>
       </group>
 
-      {/* Right Arm (Waving - Interaction Triggered) */}
-      <group ref={wavingArmRef} position={[0.55, 2.3, 0]}>
-        <mesh material={suitRed} castShadow>
-          <capsuleGeometry args={[0.08, 0.5, 4, 12]} />
-        </mesh>
-        <group position={[0.1, -0.6, 0]} rotation={[0, 0, -0.2]}>
-          <mesh material={suitRed}>
-            <capsuleGeometry args={[0.07, 0.5, 4, 12]} />
-          </mesh>
-          {/* Hand with Web Shooter Detail */}
-          <mesh position={[0, -0.35, 0]} material={suitRed}>
-            <sphereGeometry args={[0.09, 16, 16]} scale={[1, 1.2, 0.8]} />
-          </mesh>
-          <mesh position={[0, -0.3, 0.08]} material={blackTech}>
-            <boxGeometry args={[0.04, 0.04, 0.02]} />
-          </mesh>
-        </group>
-      </group>
-
-      {/* --- LEGS --- */}
+      {/* --- CUTE LEGS --- */}
       {[1, -1].map(side => (
-        <group key={side} position={[side * 0.22, 1.0, 0]}>
-          {/* Thigh */}
-          <mesh material={suitBlue} castShadow>
-            <capsuleGeometry args={[0.14, 0.8, 4, 12]} />
+        <group key={side} position={[side * 0.18, 0.2, 0]}>
+          <mesh material={suitBlue}>
+            <capsuleGeometry args={[0.13, 0.25, 4, 8]} />
           </mesh>
-          {/* Lower Leg */}
-          <group position={[0, -0.9, 0]}>
-            <mesh material={suitRed}>
-              <capsuleGeometry args={[0.11, 0.8, 4, 12]} />
-            </mesh>
-            {/* Foot */}
-            <mesh position={[0, -0.45, 0.15]} material={suitRed}>
-              <boxGeometry args={[0.18, 0.12, 0.4]} />
-            </mesh>
-          </group>
+          <mesh position={[0, -0.2, 0.08]} material={suitRed}>
+            <sphereGeometry args={[0.15, 12, 12]} scale={[1, 0.8, 1.4]} />
+          </mesh>
         </group>
       ))}
-
-      {/* Cinematic Studio Lights on the Suit */}
-      <spotLight position={[2, 5, 5]} intensity={10} color="#ff3333" />
-      <pointLight position={[-2, 2, 2]} intensity={5} color="#4488ff" />
+      
+      {/* Studio Lighting Accents */}
+      <pointLight position={[1, 2, 2]} intensity={2} color="#ffffff" />
+      <pointLight position={[-1, 1, 1]} intensity={1} color="#4488ff" />
     </group>
   );
 };
