@@ -13,6 +13,7 @@ import { SwingingLight } from './components/Scene/SwingingLight';
 import { ChatWidget } from './components/ChatWidget';
 import { GameModal } from './components/SpiderGame';
 import { EyeDecoration } from './components/EyeDecoration';
+import { Guestbook } from './components/Guestbook';
 import { AnimatePresence } from 'framer-motion';
 
 const App: React.FC = () => {
@@ -76,6 +77,10 @@ const App: React.FC = () => {
             </a>
           </div>
         </section>
+
+        {/* Guestbook / Comments Section */}
+        <Guestbook isLightOn={isLightOn} />
+
         <Footer isLightOn={isLightOn} />
       </main>
 
