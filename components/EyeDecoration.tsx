@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { motion, useSpring, useTransform } from 'framer-motion';
+// Added AnimatePresence to the imports from framer-motion
+import { motion, useSpring, AnimatePresence } from 'framer-motion';
 
 interface Props {
   isLightOn: boolean;
@@ -12,10 +13,10 @@ export const EyeDecoration: React.FC<Props> = ({ isLightOn }) => {
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Normalize mouse position (-1 to 1)
+      // Normalize mouse position (-0.5 to 0.5 for subtle tracking)
       setMousePos({
-        x: (e.clientX / window.innerWidth) * 2 - 1,
-        y: (e.clientY / window.innerHeight) * 2 - 1,
+        x: (e.clientX / window.innerWidth) - 0.5,
+        y: (e.clientY / window.innerHeight) - 0.5,
       });
     };
     
@@ -25,7 +26,7 @@ export const EyeDecoration: React.FC<Props> = ({ isLightOn }) => {
         setIsBlinking(true);
         setTimeout(() => setIsBlinking(false), 150);
       }
-    }, 3000);
+    }, 4000);
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => {
@@ -34,91 +35,91 @@ export const EyeDecoration: React.FC<Props> = ({ isLightOn }) => {
     };
   }, []);
 
-  // Spring-based smooth tracking
-  const springConfig = { damping: 30, stiffness: 200 };
-  const tx = useSpring(0, springConfig);
-  const ty = useSpring(0, springConfig);
-  const rot = useSpring(0, springConfig);
+  // Spring-based smooth tracking for the iris
+  const springConfig = { damping: 25, stiffness: 150 };
+  const irisX = useSpring(0, springConfig);
+  const irisY = useSpring(0, springConfig);
 
   useEffect(() => {
-    tx.set(mousePos.x * 15);
-    ty.set(mousePos.y * 10);
-    rot.set(mousePos.x * 5); // Slight rotation glare
-  }, [mousePos, tx, ty, rot]);
-
-  const eyeColor = isLightOn ? '#cc0000' : '#ff0000';
-  const glowIntensity = isLightOn ? '0 0 5px rgba(204,0,0,0.5)' : '0 0 15px rgba(255,0,0,0.8), 0 0 30px rgba(255,0,0,0.4)';
+    irisX.set(mousePos.x * 8); // Subtle iris movement
+    irisY.set(mousePos.y * 5);
+  }, [mousePos, irisX, irisY]);
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
+      initial={{ opacity: 0, scale: 0.9 }}
       animate={{ 
-        opacity: isLightOn ? 0.3 : 0.8,
+        opacity: isLightOn ? 0.6 : 0.9,
         scale: 1,
       }}
-      className="fixed top-8 right-8 z-[60] pointer-events-none select-none"
-      style={{
-        width: '120px',
-        height: '40px',
-      }}
+      className="fixed top-6 right-6 z-[60] pointer-events-none select-none flex flex-col items-center gap-1"
     >
-      <motion.div 
-        style={{ x: tx, y: ty, rotate: rot }}
-        className="relative w-full h-full flex items-center justify-between px-2"
-      >
-        {/* Left Eye Line */}
-        <motion.div
-          animate={{ scaleY: isBlinking ? 0.1 : 1 }}
-          transition={{ duration: 0.1 }}
-          className="relative"
-        >
-          <svg width="45" height="25" viewBox="0 0 45 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path 
-              d="M5 5C15 2 35 8 40 20C30 15 10 12 5 20V5Z" 
-              fill={eyeColor}
-              style={{ filter: `drop-shadow(${glowIntensity})` }}
-            />
-            <path 
-              d="M5 5C15 2 35 8 40 20" 
-              stroke="white" 
-              strokeWidth="0.5" 
-              strokeOpacity="0.3"
-            />
-          </svg>
-        </motion.div>
+      <div className="relative w-24 h-16 flex items-center justify-center">
+        {/* Sketch Model SVG */}
+        <svg width="100" height="80" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Eyebrow - Sketchy Path */}
+          <path 
+            d="M20 25C30 15 70 15 85 28" 
+            stroke="white" 
+            strokeWidth="2.5" 
+            strokeLinecap="round" 
+            className="opacity-80"
+          />
+          <path 
+            d="M25 22C35 15 65 15 80 25" 
+            stroke="white" 
+            strokeWidth="1" 
+            strokeLinecap="round" 
+            className="opacity-40"
+          />
 
-        {/* Right Eye Line */}
-        <motion.div
-          animate={{ scaleY: isBlinking ? 0.1 : 1 }}
-          transition={{ duration: 0.1 }}
-          className="relative"
-        >
-          <svg width="45" height="25" viewBox="0 0 45 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path 
-              d="M40 5C30 2 10 8 5 20C15 15 35 12 40 20V5Z" 
-              fill={eyeColor}
-              style={{ filter: `drop-shadow(${glowIntensity})` }}
-            />
-            <path 
-              d="M40 5C30 2 10 8 5 20" 
-              stroke="white" 
-              strokeWidth="0.5" 
-              strokeOpacity="0.3"
-            />
-          </svg>
-        </motion.div>
-      </motion.div>
-      
-      {/* Decorative scanning flare */}
+          {/* Eye Outline / Eyelids */}
+          <motion.path 
+            animate={{ d: isBlinking ? "M15 50C30 50 70 50 85 50" : "M15 50C30 35 70 35 85 50" }}
+            d="M15 50C30 35 70 35 85 50" 
+            stroke="white" 
+            strokeWidth="2" 
+            strokeLinecap="round"
+          />
+          <motion.path 
+            animate={{ d: isBlinking ? "M15 50C30 50 70 50 85 50" : "M15 50C30 65 70 65 85 50" }}
+            d="M15 50C30 65 70 65 85 50" 
+            stroke="white" 
+            strokeWidth="1.5" 
+            strokeLinecap="round"
+          />
+
+          {/* Iris and Pupil (Tracking) */}
+          <AnimatePresence>
+            {!isBlinking && (
+              <motion.g 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{ x: irisX, y: irisY }}
+              >
+                {/* Iris details */}
+                <circle cx="50" cy="50" r="10" stroke="white" strokeWidth="0.5" className="opacity-30" />
+                <circle cx="50" cy="50" r="8" stroke="white" strokeWidth="1" />
+                {/* Pupil */}
+                <circle cx="50" cy="50" r="4" fill="white" />
+                {/* Reflection catchlight */}
+                <circle cx="48" cy="48" r="1.5" fill="white" className="opacity-80" />
+              </motion.g>
+            )}
+          </AnimatePresence>
+        </svg>
+      </div>
+
+      {/* Red Text Branding */}
+      <div className="flex items-center gap-1.5 -mt-2">
+        <span className="text-[14px] font-black text-red-600 uppercase italic tracking-tighter drop-shadow-sm">Easy</span>
+        <span className="text-[14px] font-black text-red-600 uppercase italic tracking-tighter drop-shadow-sm">EYE</span>
+      </div>
+
+      {/* Subtle background glow */}
       {!isLightOn && (
-        <motion.div 
-          animate={{ 
-            opacity: [0.1, 0.4, 0.1],
-            scaleX: [0.8, 1.2, 0.8]
-          }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute inset-0 bg-red-600/5 blur-xl rounded-full"
-        />
+        <div className="absolute inset-0 bg-red-600/5 blur-2xl -z-10 rounded-full" />
       )}
     </motion.div>
   );
