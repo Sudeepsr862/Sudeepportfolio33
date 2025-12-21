@@ -66,7 +66,7 @@ export const Guestbook: React.FC<Props> = ({ isLightOn }) => {
             <div className="flex items-center gap-3">
               <MessageSquare size={14} className="text-red-500" />
               <h4 className={`text-[10px] font-black uppercase tracking-[0.3em] ${isLightOn ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                Vibe Feed
+                COMMENT
               </h4>
             </div>
             
