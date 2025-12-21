@@ -1,9 +1,9 @@
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, MapPin, GraduationCap, Palette } from 'lucide-react';
+import { User, MapPin, GraduationCap, Palette, Zap } from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
-import { SpiderManCharacter } from './Scene/SpiderManCharacter';
+import { BMWModel } from './Scene/BMWModel';
 import { OrbitControls, PerspectiveCamera, Environment, Float, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -15,6 +15,8 @@ interface Props {
 }
 
 export const About: React.FC<Props> = ({ isLightOn }) => {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <section id="about" className="py-24 px-6 max-w-6xl mx-auto">
       <motion.div
@@ -45,34 +47,46 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
           </div>
         </div>
 
-        <div className="relative h-[650px] w-full group order-1 md:order-2">
+        <div 
+          className="relative h-[650px] w-full group order-1 md:order-2"
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+        >
           <div className={`h-full w-full rounded-[4rem] overflow-hidden border border-red-600/10 shadow-2xl transition-all duration-700 ${isLightOn ? 'bg-zinc-100' : 'bg-[#080808]'}`}>
-            <Suspense fallback={<div className="flex items-center justify-center h-full font-mono text-red-500 animate-pulse">Materializing...</div>}>
+            <Suspense fallback={<div className="flex items-center justify-center h-full font-mono text-red-500 animate-pulse uppercase tracking-widest">Igniting M-Engine...</div>}>
               <Canvas 
                 dpr={[1, 1.5]} 
                 gl={{ antialias: true, powerPreference: "high-performance", alpha: true }}
               >
-                <PerspectiveCamera makeDefault position={[0, 0, 7.5]} fov={28} />
-                <AmbientLight intensity={0.7} />
+                <PerspectiveCamera makeDefault position={[5, 2, 8]} fov={35} />
+                <AmbientLight intensity={0.5} />
                 <SpotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} />
+                <pointLight position={[-5, 5, 5]} intensity={1} color="#0088ff" />
                 
-                <Environment preset="city" />
+                <Environment preset="night" />
                 
-                <Float speed={2} rotationIntensity={0.2} floatIntensity={0.4}>
-                  <SpiderManCharacter />
+                <Float speed={1.5} rotationIntensity={0.1} floatIntensity={0.2}>
+                  <BMWModel hovered={hovered} />
                 </Float>
 
-                <ContactShadows position={[0, -2.4, 0]} opacity={0.5} scale={10} blur={2.5} far={4} color={isLightOn ? "#000000" : "#ff0000"} />
-                <OrbitControls enableZoom={false} minPolarAngle={Math.PI/3} maxPolarAngle={Math.PI/1.6} enableDamping />
+                <ContactShadows position={[0, -0.6, 0]} opacity={0.5} scale={15} blur={2} far={4} color={isLightOn ? "#000000" : "#0088ff"} />
+                <OrbitControls 
+                  enableZoom={false} 
+                  minPolarAngle={Math.PI/4} 
+                  maxPolarAngle={Math.PI/2} 
+                  enableDamping 
+                  autoRotate={!hovered}
+                  autoRotateSpeed={0.5}
+                />
               </Canvas>
             </Suspense>
           </div>
           <motion.div 
-            animate={{ y: [0, -5, 0] }}
+            animate={{ y: [0, -5, 0], scale: hovered ? 1.1 : 1 }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-4 -right-4 px-8 py-4 bg-red-600 text-white text-[10px] font-black rounded-2xl shadow-xl uppercase tracking-widest italic"
+            className="absolute -top-4 -right-4 px-8 py-4 bg-red-600 text-white text-[10px] font-black rounded-2xl shadow-xl uppercase tracking-widest italic flex items-center gap-2"
           >
-            HOVER TO WAVE 👋
+            <Zap size={14} fill="currentColor" /> REV ENGINE
           </motion.div>
         </div>
       </motion.div>
