@@ -12,6 +12,7 @@ import { InteractiveBackground } from './components/Scene/InteractiveBackground'
 import { SwingingLight } from './components/Scene/SwingingLight';
 import { ChatWidget } from './components/ChatWidget';
 import { GameModal } from './components/SpiderGame';
+import { EyeDecoration } from './components/EyeDecoration';
 import { AnimatePresence } from 'framer-motion';
 
 const App: React.FC = () => {
@@ -37,6 +38,9 @@ const App: React.FC = () => {
           <InteractiveBackground isLightOn={isLightOn} isBulbGlowing={isBulbGlowing} />
         </Canvas>
       </div>
+
+      {/* Eye Decoration - Top Right Observer */}
+      <EyeDecoration isLightOn={isLightOn} />
 
       {/* Swinging Light Toggle Layer */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 z-50 h-[550px] w-64 pointer-events-auto">

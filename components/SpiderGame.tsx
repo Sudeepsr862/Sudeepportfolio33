@@ -74,7 +74,7 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
       width: 44,
       height: 60,
       targetX: canvas.offsetWidth / 2 - 22,
-      lerpSpeed: 0.18,
+      lerpSpeed: 0.25, // Increased from 0.18 for snappier movement
     };
 
     let obstacles: any[] = [];
@@ -83,7 +83,7 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
       x: Math.random() * canvas.offsetWidth,
       y: Math.random() * canvas.offsetHeight,
       size: Math.random() * 1.5,
-      speed: 0.5 + Math.random() * 0.5
+      speed: 0.8 + Math.random() * 1.2 // Increased star scroll speed for sense of pace
     }));
 
     const keys: { [key: string]: boolean } = {};
@@ -94,16 +94,16 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
     window.addEventListener('keyup', handleKeyUp);
 
     const createExplosion = (x: number, y: number, color = '#ff3300') => {
-      screenShake = 15;
-      for (let i = 0; i < 20; i++) {
+      screenShake = 20; // Increased shake intensity
+      for (let i = 0; i < 25; i++) {
         particles.push({
           x,
           y,
-          vx: (Math.random() - 0.5) * 10,
-          vy: (Math.random() - 0.5) * 10,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.5) * 14,
           life: 1,
           color,
-          size: Math.random() * 3 + 1
+          size: Math.random() * 4 + 1
         });
       }
     };
@@ -112,17 +112,18 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
       const s = scoreRef.current;
       const l = levelRef.current;
       const afterLevel2 = s >= 100;
-      const speedMultiplier = afterLevel2 ? 1.8 : (1 + (l - 1) * 0.15);
-      const baseSpeed = (3 + l * 0.5) * speedMultiplier;
+      // Faster speed logic
+      const speedMultiplier = afterLevel2 ? 2.2 : (1 + (l - 1) * 0.22);
+      const baseSpeed = (5 + l * 0.7) * speedMultiplier;
       
       obstacles.push({
         x: Math.random() * (canvas.offsetWidth - 40),
         y: -60,
         width: 35,
         height: 35,
-        speed: baseSpeed + (Math.random() * 2),
+        speed: baseSpeed + (Math.random() * 3),
         rotation: 0,
-        rotationSpeed: (Math.random() - 0.5) * (afterLevel2 ? 0.2 : 0.1),
+        rotationSpeed: (Math.random() - 0.5) * (afterLevel2 ? 0.3 : 0.15),
         isAggressive: afterLevel2
       });
     };
@@ -130,7 +131,7 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
     const drawSpiderMan = (x: number, y: number) => {
       ctx.save();
       ctx.translate(x + 22, y + 30);
-      const bounce = Math.sin(Date.now() * 0.01) * 3;
+      const bounce = Math.sin(Date.now() * 0.015) * 4; // Faster idle bounce
       ctx.fillStyle = '#cc0000';
       ctx.fillRect(-15, 15 + bounce, 10, 15);
       ctx.fillRect(5, 15 + bounce, 10, 15);
@@ -159,14 +160,14 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
     const loop = () => {
       if (gameOverRef.current) return;
 
-      if (screenShake > 0) screenShake *= 0.9;
+      if (screenShake > 0) screenShake *= 0.85;
 
       stars.forEach(s => {
-        s.y += s.speed;
+        s.y += s.speed * 2; // Double scrolling speed
         if (s.y > canvas.offsetHeight) s.y = 0;
       });
 
-      const step = 8;
+      const step = 14; // Increased from 8 for much faster left/right dashing
       if (keys['ArrowLeft'] || moveState.current.left) spidey.targetX -= step;
       if (keys['ArrowRight'] || moveState.current.right) spidey.targetX += step;
       
@@ -183,7 +184,7 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
         const dy = (spidey.y + 30) - (obs.y + 17);
         const dist = Math.sqrt(dx*dx + dy*dy);
 
-        if (dist < 28) {
+        if (dist < 30) { // Slightly bigger hitboxes for more challenge
           createExplosion(obs.x + 17, obs.y + 17);
           gameOverRef.current = true;
           setGameOver(true);
@@ -192,7 +193,7 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
         if (obs.y > canvas.offsetHeight) {
           obstacles.splice(i, 1);
           scoreRef.current += 1;
-          levelRef.current = Math.floor(scoreRef.current / 50) + 1;
+          levelRef.current = Math.floor(scoreRef.current / 40) + 1; // Levels up faster (every 40 instead of 50)
         }
       }
 
@@ -201,13 +202,14 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
         const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
-        p.life -= 0.02;
+        p.life -= 0.025; // Particles fade faster
         if (p.life <= 0) particles.splice(i, 1);
       }
 
       frameCount++;
-      const baseSpawnRate = Math.max(15, 60 - levelRef.current * 6);
-      const finalSpawnRate = scoreRef.current >= 100 ? Math.max(8, baseSpawnRate - 25) : baseSpawnRate;
+      // Much more aggressive spawn rates
+      const baseSpawnRate = Math.max(8, 45 - levelRef.current * 8);
+      const finalSpawnRate = scoreRef.current >= 100 ? Math.max(4, baseSpawnRate - 20) : baseSpawnRate;
       
       if (frameCount % finalSpawnRate === 0) spawnObstacle();
 
@@ -216,12 +218,12 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
       ctx.save();
       if (screenShake > 0.1) ctx.translate((Math.random()-0.5)*screenShake, (Math.random()-0.5)*screenShake);
       
-      ctx.fillStyle = '#0d0d0d';
+      ctx.fillStyle = '#050505'; // Darker background
       ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
       
       ctx.fillStyle = '#fff';
       stars.forEach(s => { 
-        ctx.globalAlpha = 0.3; 
+        ctx.globalAlpha = 0.5; 
         ctx.fillRect(s.x, s.y, s.size, s.size); 
       });
       ctx.globalAlpha = 1;
@@ -230,15 +232,15 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
         ctx.save();
         ctx.translate(obs.x + 17, obs.y + 17);
         ctx.rotate(obs.rotation);
-        ctx.fillStyle = obs.isAggressive ? '#500' : '#222';
+        ctx.fillStyle = obs.isAggressive ? '#600' : '#222';
         ctx.fillRect(-12, -12, 24, 24);
-        ctx.strokeStyle = obs.isAggressive ? '#ff0000' : '#444';
-        ctx.lineWidth = obs.isAggressive ? 2 : 1;
+        ctx.strokeStyle = obs.isAggressive ? '#ff0000' : '#666';
+        ctx.lineWidth = obs.isAggressive ? 3 : 1;
         ctx.strokeRect(-12, -12, 24, 24);
         if (obs.isAggressive) {
            ctx.fillStyle = '#ff0000';
            ctx.beginPath();
-           ctx.arc(0, 0, 4, 0, Math.PI * 2);
+           ctx.arc(0, 0, 5, 0, Math.PI * 2);
            ctx.fill();
         }
         ctx.restore();
@@ -284,11 +286,11 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
     >
-      <div className="relative bg-[#0a0a0a] border border-zinc-800 rounded-[2rem] overflow-hidden max-w-lg w-full h-[600px] max-h-[85vh] flex flex-col shadow-[0_30px_100px_rgba(220,38,38,0.2)]">
+      <div className="relative bg-[#0a0a0a] border border-zinc-800 rounded-[2rem] overflow-hidden max-w-lg w-full h-[600px] max-h-[85vh] flex flex-col shadow-[0_30px_100px_rgba(220,38,38,0.3)]">
         <div className="p-4 border-b border-zinc-900 flex justify-between items-center bg-[#0a0a0a] z-[101]">
           <div className="flex items-center gap-3">
-             <Clock className="text-red-500" size={18} />
-             <h3 className="text-sm font-black text-white uppercase italic tracking-tighter">TIME PASS</h3>
+             <Zap className="text-red-500 animate-pulse" size={18} />
+             <h3 className="text-sm font-black text-white uppercase italic tracking-tighter">TURBO MODE</h3>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-zinc-800 rounded-full transition-colors text-zinc-500">
             <X size={20} />
@@ -302,19 +304,19 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
                 <div className="flex items-center justify-center gap-2 text-yellow-500 font-mono text-xs uppercase tracking-widest mb-2">
                   <Star size={12} fill="currentColor" /> BEST: {highScore} <Star size={12} fill="currentColor" />
                 </div>
-                <h2 className="text-4xl font-black text-white uppercase italic tracking-tight">TIME PASS</h2>
+                <h2 className="text-4xl font-black text-white uppercase italic tracking-tight">HIGH VELOCITY</h2>
               </div>
-              <p className="mb-8 text-zinc-400 text-sm max-w-[250px]">Avoid falling debris. Difficulty spikes significantly after score 100.</p>
+              <p className="mb-8 text-zinc-400 text-sm max-w-[250px]">The pace is much higher. Stay sharp. Levels scale aggressively.</p>
               <button 
                 onClick={() => setGameStarted(true)} 
                 className="px-12 py-4 bg-red-600 text-white rounded-full font-black shadow-lg hover:bg-red-500 transition-all uppercase tracking-wider"
               >
-                START GAME
+                IGNITE 🕸️
               </button>
             </div>
           ) : gameOver ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/95 text-center z-[103] p-10">
-                <h2 className="text-5xl font-black text-red-600 mb-6 uppercase italic">FAILED</h2>
+                <h2 className="text-5xl font-black text-red-600 mb-6 uppercase italic">CRASHED</h2>
                 <div className="space-y-1 mb-10">
                   <p className="text-white text-3xl font-black">SCORE: {score}</p>
                   <p className="text-yellow-500 font-mono text-sm tracking-widest uppercase">HIGHEST: {highScore}</p>
@@ -323,7 +325,7 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
                   onClick={resetGame} 
                   className="flex items-center gap-3 px-10 py-4 bg-white text-black rounded-full font-black hover:scale-105 transition-transform"
                 >
-                  <RotateCcw size={18} /> PLAY AGAIN
+                  <RotateCcw size={18} /> REBOOT
                 </button>
             </div>
           ) : (
@@ -332,9 +334,9 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
               
               <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none">
                 <div className="px-3 py-1 bg-black/80 rounded-lg border border-white/5 text-white font-mono text-[10px] uppercase tracking-widest flex flex-col gap-1">
-                  <span>SCORE: {score}</span>
-                  <span className="text-[8px] opacity-40">LVL: {level}</span>
-                  <span className="text-[8px] text-yellow-500/60">BEST: {highScore}</span>
+                  <span className="text-red-500 font-black">VELOCITY_SCORE: {score}</span>
+                  <span className="text-[8px] opacity-40">INSTABILITY: {level}</span>
+                  <span className="text-[8px] text-yellow-500/60">RECORD: {highScore}</span>
                 </div>
 
                 {score >= 100 && (
@@ -344,18 +346,18 @@ export const GameModal: React.FC<Props> = ({ onClose }) => {
                     className="flex items-center gap-2 px-3 py-1 bg-red-600/20 border border-red-600 rounded-lg"
                   >
                     <AlertTriangle size={12} className="text-red-500 animate-pulse" />
-                    <span className="text-[9px] font-mono text-red-500 font-bold uppercase animate-pulse">OVERLOAD_MODE</span>
+                    <span className="text-[9px] font-mono text-red-500 font-bold uppercase animate-pulse">OVERDRIVE_ACTIVE</span>
                   </motion.div>
                 )}
               </div>
 
               <div className="absolute inset-x-0 bottom-6 flex justify-between px-10 pointer-events-none z-[106] opacity-30">
                 <div className="flex flex-col items-start gap-1">
-                   <span className="text-[10px] font-mono text-white tracking-[0.3em]">TAP_LEFT</span>
+                   <span className="text-[10px] font-mono text-white tracking-[0.3em]">LEFT_DASH</span>
                    <div className="h-[2px] w-8 bg-red-600" />
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                   <span className="text-[10px] font-mono text-white tracking-[0.3em]">TAP_RIGHT</span>
+                   <span className="text-[10px] font-mono text-white tracking-[0.3em]">RIGHT_DASH</span>
                    <div className="h-[2px] w-8 bg-red-600" />
                 </div>
               </div>
