@@ -1,7 +1,7 @@
 
 import React, { Suspense, useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, MapPin, GraduationCap, Palette, Zap } from 'lucide-react';
+import { MapPin, GraduationCap, Palette, Zap, Sparkles, Layout } from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
 import { BMWModel } from './Scene/BMWModel';
 import { OrbitControls, PerspectiveCamera, Environment, Float, ContactShadows } from '@react-three/drei';
@@ -27,22 +27,41 @@ export const About: React.FC<Props> = ({ isLightOn }) => {
       >
         <div className="order-2 md:order-1">
           <h2 className={`text-4xl md:text-5xl font-bold mb-8 ${isLightOn ? 'text-zinc-900' : 'text-white'}`}>
-            The Story <span className="text-red-500 italic">Behind the Code</span>
+            THE ARCHITECTURE OF <span className="text-red-500 italic">MY PASSION</span>
           </h2>
-          <p className={`text-lg leading-relaxed mb-8 ${isLightOn ? 'text-zinc-600' : 'text-zinc-400'}`}>
-            I am an 18-year-old engineering student from <span className="text-red-500 font-bold">Chikmagalur</span>. 
-            Pursuing B.E. in AIML at <span className="text-red-500 font-bold">MITK Udupi</span>.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className={`p-6 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-white border-zinc-200 shadow-sm' : 'bg-zinc-900/50 border-zinc-800'}`}>
-              <MapPin className="text-red-500 mb-3" size={24} />
-              <h4 className="font-bold mb-1">Roots</h4>
-              <p className="text-sm opacity-60">Sringeri, Karnataka</p>
+          
+          <div className={`space-y-6 text-lg leading-relaxed mb-10 ${isLightOn ? 'text-zinc-600' : 'text-zinc-400'}`}>
+            <p>
+              I am <span className="text-red-500 font-bold">Sudeep SR</span>, an 18-year-old visionary hailing from the serene landscapes of <span className="text-red-500 font-bold">Sringeri, Chikmagalur</span>. Growing up in Karnataka, I've always been consumed by a hunger to learn everything. 
+            </p>
+            <p>
+              My journey is a blend of different worlds. I am a <span className="italic font-semibold text-zinc-200">sketch artist</span> by soul, a <span className="italic font-semibold text-zinc-200">cinematic editor</span> by eye, and a <span className="italic font-semibold text-zinc-200">techy</span> by mind. While I’ve explored many fields, I’m currently focused on reaching perfection in the world of technology.
+            </p>
+            <p>
+              Currently, I am deep-diving into the future as a B.E. student in <span className="text-red-500 font-bold">Artificial Intelligence and Machine Learning</span> at <span className="text-red-500 font-bold">MITK Udupi</span>. I believe in building a future where logic meets aesthetics.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className={`p-5 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-white border-zinc-200 shadow-sm' : 'bg-zinc-900/50 border-zinc-800 hover:border-red-500/30'}`}>
+              <MapPin className="text-red-500 mb-3" size={20} />
+              <h4 className="font-bold text-sm mb-1">Roots</h4>
+              <p className="text-xs opacity-60">Sringeri, Chikmagalur</p>
             </div>
-            <div className={`p-6 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-white border-zinc-200 shadow-sm' : 'bg-zinc-900/50 border-zinc-800'}`}>
-              <GraduationCap className="text-red-500 mb-3" size={24} />
-              <h4 className="font-bold mb-1">Education</h4>
-              <p className="text-sm opacity-60">MITK Udupi - AIML</p>
+            <div className={`p-5 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-white border-zinc-200 shadow-sm' : 'bg-zinc-900/50 border-zinc-800 hover:border-red-500/30'}`}>
+              <GraduationCap className="text-red-500 mb-3" size={20} />
+              <h4 className="font-bold text-sm mb-1">Education</h4>
+              <p className="text-xs opacity-60">MITK Udupi - AIML</p>
+            </div>
+            <div className={`p-5 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-white border-zinc-200 shadow-sm' : 'bg-zinc-900/50 border-zinc-800 hover:border-red-500/30'}`}>
+              <Palette className="text-red-500 mb-3" size={20} />
+              <h4 className="font-bold text-sm mb-1">Creative Trio</h4>
+              <p className="text-xs opacity-60">Artist, Editor, Techy</p>
+            </div>
+            <div className={`p-5 rounded-2xl border transition-all duration-300 ${isLightOn ? 'bg-white border-zinc-200 shadow-sm' : 'bg-zinc-900/50 border-zinc-800 hover:border-red-500/30'}`}>
+              <Sparkles className="text-red-500 mb-3" size={20} />
+              <h4 className="font-bold text-sm mb-1">Goal</h4>
+              <p className="text-xs opacity-60">Pursuing Technical Perfection</p>
             </div>
           </div>
         </div>
