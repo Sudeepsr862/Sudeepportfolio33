@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Send, User, Trash2, Clock } from 'lucide-react';
+import { MessageSquare, Send, User, Trash2 } from 'lucide-react';
 
 interface Comment {
   id: string;
@@ -58,113 +58,102 @@ export const Guestbook: React.FC<Props> = ({ isLightOn }) => {
   };
 
   return (
-    <section className={`py-12 px-6 border-t ${isLightOn ? 'bg-zinc-100/50 border-zinc-200' : 'bg-black/20 border-white/5'}`}>
-      <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <div className="text-center md:text-left">
-            <h3 className={`text-xl font-bold flex items-center gap-2 justify-center md:justify-start ${isLightOn ? 'text-zinc-900' : 'text-white'}`}>
-              <MessageSquare size={20} className="text-red-500" /> Guestbook
-            </h3>
-            <p className="text-xs opacity-50 mt-1 uppercase tracking-widest font-mono">Leave a mark on the grid</p>
-          </div>
-          
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsFormOpen(!isFormOpen)}
-            className={`px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
-              isFormOpen 
-                ? 'bg-zinc-800 text-white' 
-                : 'bg-red-600 text-white shadow-lg shadow-red-600/20'
-            }`}
-          >
-            {isFormOpen ? 'Cancel' : 'Sign Guestbook 🕸️'}
-          </motion.button>
-        </div>
-
-        <AnimatePresence>
-          {isFormOpen && (
-            <motion.form
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              onSubmit={handleSubmit}
-              className={`mb-12 overflow-hidden p-6 rounded-2xl border ${isLightOn ? 'bg-white border-zinc-200 shadow-sm' : 'bg-zinc-900/50 border-zinc-800'}`}
+    <section className={`py-8 px-6 border-t ${isLightOn ? 'bg-zinc-100/30 border-zinc-200' : 'bg-black border-white/5'}`}>
+      <div className="max-w-5xl mx-auto">
+        <div className="flex flex-col gap-6">
+          {/* Header & Toggle */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <MessageSquare size={14} className="text-red-500" />
+              <h4 className={`text-[10px] font-black uppercase tracking-[0.3em] ${isLightOn ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                Vibe Feed
+              </h4>
+            </div>
+            
+            <button
+              onClick={() => setIsFormOpen(!isFormOpen)}
+              className={`text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border transition-all ${
+                isFormOpen 
+                  ? 'border-red-500 text-red-500' 
+                  : 'border-zinc-800 text-zinc-500 hover:border-red-500 hover:text-red-500'
+              }`}
             >
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="md:col-span-1">
+              {isFormOpen ? 'Cancel' : 'Sign Grid 🕸️'}
+            </button>
+          </div>
+
+          {/* Compact Form */}
+          <AnimatePresence>
+            {isFormOpen && (
+              <motion.form
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                onSubmit={handleSubmit}
+                className="overflow-hidden"
+              >
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="text"
-                    placeholder="Your Name"
+                    placeholder="Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className={`w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all ${
-                      isLightOn ? 'bg-zinc-50 border-zinc-200 focus:border-red-500' : 'bg-black/40 border-zinc-800 focus:border-red-600 text-white'
+                    className={`sm:w-32 px-4 py-2 rounded-xl text-[11px] outline-none transition-all ${
+                      isLightOn ? 'bg-white border border-zinc-200 focus:border-red-500' : 'bg-zinc-900 border border-zinc-800 focus:border-red-600 text-white'
                     }`}
                   />
-                </div>
-                <div className="md:col-span-2">
                   <input
                     type="text"
                     placeholder="Drop a vibe..."
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                    className={`w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all ${
-                      isLightOn ? 'bg-zinc-50 border-zinc-200 focus:border-red-500' : 'bg-black/40 border-zinc-800 focus:border-red-600 text-white'
+                    className={`flex-1 px-4 py-2 rounded-xl text-[11px] outline-none transition-all ${
+                      isLightOn ? 'bg-white border border-zinc-200 focus:border-red-500' : 'bg-zinc-900 border border-zinc-800 focus:border-red-600 text-white'
                     }`}
                   />
-                </div>
-                <div className="md:col-span-1">
                   <button
                     type="submit"
-                    className="w-full h-full py-3 bg-red-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-red-500 transition-all flex items-center justify-center gap-2"
+                    className="px-6 py-2 bg-red-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500 transition-all flex items-center justify-center gap-2"
                   >
-                    Post <Send size={14} />
+                    Post <Send size={10} />
                   </button>
                 </div>
-              </div>
-            </motion.form>
-          )}
-        </AnimatePresence>
+              </motion.form>
+            )}
+          </AnimatePresence>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {comments.length === 0 ? (
-            <div className="col-span-full py-8 text-center opacity-30 italic text-sm">
-              The guestbook is empty. Be the first to sign.
-            </div>
-          ) : (
-            comments.map((comment) => (
-              <motion.div
-                key={comment.id}
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`p-4 rounded-xl border flex flex-col justify-between group transition-all ${
-                  isLightOn ? 'bg-white border-zinc-200' : 'bg-zinc-950/40 border-white/5'
-                }`}
-              >
-                <div>
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-[10px] font-mono text-red-500 uppercase font-black tracking-tighter flex items-center gap-1">
-                      <User size={10} /> {comment.name}
-                    </span>
-                    <button 
-                      onClick={() => deleteComment(comment.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-zinc-500 hover:text-red-500 transition-all"
-                    >
-                      <Trash2 size={10} />
-                    </button>
-                  </div>
-                  <p className={`text-xs leading-relaxed ${isLightOn ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                    "{comment.text}"
-                  </p>
-                </div>
-                <div className="mt-3 flex items-center gap-1 opacity-20 text-[8px] font-mono uppercase">
-                  <Clock size={8} /> {new Date(comment.timestamp).toLocaleDateString()}
-                </div>
-              </motion.div>
-            ))
-          )}
+          {/* Small Comment Display */}
+          <div className="flex flex-wrap gap-2">
+            {comments.length === 0 ? (
+              <span className="text-[10px] opacity-20 italic">No one has visited the grid yet...</span>
+            ) : (
+              comments.map((comment) => (
+                <motion.div
+                  key={comment.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
+                    isLightOn ? 'bg-white border-zinc-200' : 'bg-zinc-950 border-white/5'
+                  }`}
+                >
+                  <span className="text-[10px] font-black text-red-600 uppercase tracking-tighter flex items-center gap-1">
+                    <User size={8} /> {comment.name}
+                  </span>
+                  <div className={`w-[1px] h-3 ${isLightOn ? 'bg-zinc-200' : 'bg-zinc-800'}`} />
+                  <span className={`text-[10px] ${isLightOn ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                    {comment.text}
+                  </span>
+                  
+                  <button 
+                    onClick={() => deleteComment(comment.id)}
+                    className="ml-1 opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-red-500 transition-all"
+                  >
+                    <Trash2 size={8} />
+                  </button>
+                </motion.div>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </section>

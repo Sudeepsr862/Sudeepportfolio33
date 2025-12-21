@@ -78,10 +78,10 @@ const App: React.FC = () => {
           </div>
         </section>
 
-        {/* Guestbook / Comments Section */}
-        <Guestbook isLightOn={isLightOn} />
-
         <Footer isLightOn={isLightOn} />
+
+        {/* Small Guestbook / Comments at the absolute bottom */}
+        <Guestbook isLightOn={isLightOn} />
       </main>
 
       <ChatWidget isLightOn={isLightOn} />
