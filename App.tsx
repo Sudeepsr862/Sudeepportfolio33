@@ -1,3 +1,4 @@
+
 import React, { useState, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Hero } from './components/Hero';
@@ -26,16 +27,24 @@ const App: React.FC = () => {
   return (
     <div className={`relative min-h-screen selection:bg-red-500/20 overflow-x-hidden transition-colors duration-700 ${isLightOn ? 'bg-zinc-50 text-zinc-900' : 'bg-[#050505] text-white'}`}>
       
-      {/* 3D Background Layer */}
+      {/* 3D Background Layer - Optimized DPR */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
+        <Canvas 
+          camera={{ position: [0, 0, 5], fov: 75 }}
+          dpr={1}
+          gl={{ powerPreference: "low-power", antialias: false }}
+        >
           <InteractiveBackground isLightOn={isLightOn} isBulbGlowing={isBulbGlowing} />
         </Canvas>
       </div>
 
       {/* Swinging Light Toggle Layer */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 z-50 h-[550px] w-64 pointer-events-auto">
-        <Canvas camera={{ position: [0, -1, 5], fov: 50 }} shadows>
+        <Canvas 
+          camera={{ position: [0, -1, 5], fov: 50 }}
+          dpr={[1, 1.5]}
+          gl={{ antialias: true, alpha: true }}
+        >
           <Suspense fallback={null}>
             <SwingingLight isLightOn={isBulbGlowing} onToggle={toggleLight} />
           </Suspense>
@@ -54,22 +63,20 @@ const App: React.FC = () => {
         <section id="contact" className={`py-24 px-6 border-t ${isLightOn ? 'border-zinc-200' : 'border-white/5'}`}>
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-bold mb-8">Get In Touch</h2>
-            <p className="text-zinc-400 mb-12">I'm currently looking for new opportunities and collaborations.</p>
+            <p className="text-zinc-400 mb-12 italic">Let's build something epic together.</p>
             <a 
               href="mailto:sudeepsr52@gmail.com"
-              className="px-10 py-4 bg-red-600 text-white rounded-full font-bold hover:bg-red-500 transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)] inline-block"
+              className="px-12 py-5 bg-red-600 text-white rounded-2xl font-black hover:bg-red-500 transition-all shadow-2xl inline-block uppercase tracking-widest text-sm"
             >
-              Email Me
+              Send Signal 🕸️
             </a>
           </div>
         </section>
         <Footer isLightOn={isLightOn} />
       </main>
 
-      {/* AI Chat Widget */}
       <ChatWidget isLightOn={isLightOn} />
       
-      {/* Game Modal */}
       <AnimatePresence>
         {isGameOpen && (
           <GameModal onClose={() => setIsGameOpen(false)} />
