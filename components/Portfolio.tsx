@@ -10,6 +10,13 @@ interface Props {
 export const Portfolio: React.FC<Props> = ({ isLightOn }) => {
   const projects = [
     {
+      title: "CropDoc",
+      desc: "AI-powered agritech platform for crop health diagnosis and management.",
+      image: "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?q=80&w=600&h=400&auto=format&fit=crop",
+      tags: ["AI", "Agritech", "React"],
+      link: "https://agritech-2.vercel.app"
+    },
+    {
       title: "AI Video Synth",
       desc: "Generative AI tool for cinematic sequences.",
       image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&h=400&auto=format&fit=crop",
