@@ -60,11 +60,11 @@ export const VideoEdits: React.FC<Props> = ({ isLightOn }) => {
               </div>
             </div>
             
-            <h3 className="text-3xl font-bold mb-2 text-white">@sype.ix</h3>
+            <h3 className="text-3xl font-bold mb-2 text-white">@sype.editz</h3>
             <p className="text-sm text-cyan-400 font-mono mb-8 tracking-widest uppercase">Video Editor & Artist</p>
             
             <motion.a
-              href="https://www.instagram.com/sype.ix?igsh=MW9jeXAzd2RsNjZvcw=="
+              href="https://www.instagram.com/sype.editz?utm_source=ig_web_button_share_sheet&exln=ZDNlZDc0MzIxNw=="
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
