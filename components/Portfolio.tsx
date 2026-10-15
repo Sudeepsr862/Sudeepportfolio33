@@ -10,6 +10,13 @@ interface Props {
 export const Portfolio: React.FC<Props> = ({ isLightOn }) => {
   const projects = [
     {
+      title: "Artlix",
+      desc: "Cinematic art marketplace connecting creators and collectors to showcase, sell, and commission artwork.",
+      image: "/artlix-cover.jpg",
+      tags: ["Marketplace", "Digital Art", "Full Stack"],
+      link: "https://artlix.netlify.app/"
+    },
+    {
       title: "CropDoc",
       desc: "AI-powered agritech platform for crop health diagnosis and management.",
       image: "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?q=80&w=600&h=400&auto=format&fit=crop",
@@ -76,6 +83,7 @@ export const Portfolio: React.FC<Props> = ({ isLightOn }) => {
                   src={project.image} 
                   alt={project.title}
                   className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
                 />
                 <motion.div 
                   variants={{
