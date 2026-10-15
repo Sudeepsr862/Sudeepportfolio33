@@ -17,7 +17,7 @@ export const VideoEdits: React.FC<Props> = ({ isLightOn }) => {
         className="flex flex-col items-center"
       >
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 text-cyan-500 font-mono text-sm mb-8 border border-cyan-500/20">
-          <Film size={16} /> @sype.ix
+          <Film size={16} /> @sype.editz
         </div>
         
         <h2 className={`text-4xl md:text-6xl font-black mb-8 ${isLightOn ? 'text-zinc-900' : 'text-white'}`}>
